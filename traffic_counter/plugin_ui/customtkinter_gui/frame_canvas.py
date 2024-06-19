@@ -94,8 +94,8 @@ class CanvasBackground(AbstractCanvas):
         self.add_preview_image()
 
     def add_preview_image(self) -> None:
-        if Path(r"OTAnalytics/assets/OpenTrafficCam_800.png").exists():
-            preview_image = Image.open(r"OTAnalytics/assets/OpenTrafficCam_800.png")
+        if Path(r"traffic_counter/assets/OpenTrafficCam_800.png").exists():
+            preview_image = Image.open(r"traffic_counter/assets/OpenTrafficCam_800.png")
             self._current_image = ImageTk.PhotoImage(preview_image)
             self._draw()
 

@@ -63,7 +63,7 @@ class ModifiedCTk(AbstractMainWindow, CTk):
         return x, y
 
     def report_callback_exception(
-        self, exc: BaseException | BaseExceptionGroup, val: Any, tb: Any
+        self, exc: BaseException, val: Any, tb: Any  # BaseExceptionGroup
     ) -> None:
         messages = gather_exception_messages(val)
         message = "\n".join(messages)

@@ -9,18 +9,18 @@ from pandas import DataFrame
 from pygeos import get_coordinates, line_locate_point, points
 from pytest_benchmark.fixture import BenchmarkFixture
 
-from OTAnalytics.application.config import DEFAULT_TRACK_OFFSET
-from OTAnalytics.domain.geometry import Coordinate, RelativeOffsetCoordinate
-from OTAnalytics.domain.section import Area, LineSection, Section, SectionId
-from OTAnalytics.domain.track import TRACK_CLASSIFICATION, Track, TrackId, X, Y
-from OTAnalytics.domain.track_dataset import (
+from traffic_counter.application.config import DEFAULT_TRACK_OFFSET
+from traffic_counter.domain.geometry import Coordinate, RelativeOffsetCoordinate
+from traffic_counter.domain.section import Area, LineSection, Section, SectionId
+from traffic_counter.domain.track import TRACK_CLASSIFICATION, Track, TrackId, X, Y
+from traffic_counter.domain.track_dataset import (
     TRACK_GEOMETRY_FACTORY,
     IntersectionPoint,
     TrackDataset,
     TrackGeometryDataset,
 )
-from OTAnalytics.domain.types import EventType
-from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
+from traffic_counter.domain.types import EventType
+from traffic_counter.plugin_datastore.track_geometry_store.pygeos_store import (
     BASE_GEOMETRY,
     COLUMNS,
     GEOMETRY,
@@ -29,12 +29,12 @@ from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
     PygeosTrackGeometryDataset,
     create_pygeos_track,
 )
-from OTAnalytics.plugin_datastore.track_store import (
+from traffic_counter.plugin_datastore.track_store import (
     PandasByMaxConfidence,
     PandasTrackDataset,
 )
-from OTAnalytics.plugin_parser.otvision_parser import OtFlowParser, OttrkParser
-from OTAnalytics.plugin_parser.pandas_parser import PandasDetectionParser
+from traffic_counter.plugin_parser.otvision_parser import OtFlowParser, OttrkParser
+from traffic_counter.plugin_parser.pandas_parser import PandasDetectionParser
 from tests.conftest import TrackBuilder
 
 

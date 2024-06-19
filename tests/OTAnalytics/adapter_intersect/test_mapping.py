@@ -2,8 +2,8 @@ import pytest
 from shapely import LineString, Point
 from shapely import Polygon as ShapelyPolygon
 
-from OTAnalytics.domain.geometry import Coordinate, Line, Polygon
-from OTAnalytics.plugin_intersect.shapely.mapping import ShapelyMapper
+from traffic_counter.domain.geometry import Coordinate, Line, Polygon
+from traffic_counter.plugin_intersect.shapely.mapping import ShapelyMapper
 
 
 class TestShapelyMappers:

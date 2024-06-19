@@ -1,6 +1,6 @@
 import pytest
 
-from OTAnalytics.domain.geometry import (
+from traffic_counter.domain.geometry import (
     Coordinate,
     DirectionVector2D,
     ImageCoordinate,

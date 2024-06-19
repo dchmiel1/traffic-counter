@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from OTAnalytics.application.project import NAME, START_DATE, Project, StartDateMissing
+from traffic_counter.application.project import NAME, START_DATE, Project, StartDateMissing
 
 
 class TestProject:

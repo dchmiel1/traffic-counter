@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-from OTAnalytics.application.datastore import TrackToVideoRepository
-from OTAnalytics.application.use_cases.track_to_video_repository import (
+from traffic_counter.application.datastore import TrackToVideoRepository
+from traffic_counter.application.use_cases.track_to_video_repository import (
     ClearAllTrackToVideos,
 )
 

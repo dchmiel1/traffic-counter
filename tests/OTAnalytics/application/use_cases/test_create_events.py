@@ -2,9 +2,9 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.analysis.intersect import RunIntersect
-from OTAnalytics.application.eventlist import SceneActionDetector
-from OTAnalytics.application.use_cases.create_events import (
+from traffic_counter.application.analysis.intersect import RunIntersect
+from traffic_counter.application.eventlist import SceneActionDetector
+from traffic_counter.application.use_cases.create_events import (
     CreateEvents,
     CreateIntersectionEvents,
     CreateSceneEvents,
@@ -12,12 +12,12 @@ from OTAnalytics.application.use_cases.create_events import (
     SimpleCreateIntersectionEvents,
     SimpleCreateSceneEvents,
 )
-from OTAnalytics.application.use_cases.event_repository import AddEvents, ClearAllEvents
-from OTAnalytics.application.use_cases.track_repository import GetAllTracks
-from OTAnalytics.domain.event import Event
-from OTAnalytics.domain.section import Section, SectionId
-from OTAnalytics.domain.track import Track
-from OTAnalytics.domain.track_dataset import TrackDataset
+from traffic_counter.application.use_cases.event_repository import AddEvents, ClearAllEvents
+from traffic_counter.application.use_cases.track_repository import GetAllTracks
+from traffic_counter.domain.event import Event
+from traffic_counter.domain.section import Section, SectionId
+from traffic_counter.domain.track import Track
+from traffic_counter.domain.track_dataset import TrackDataset
 
 
 @pytest.fixture

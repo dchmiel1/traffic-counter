@@ -1,9 +1,9 @@
 from pathlib import Path
 from unittest.mock import MagicMock, Mock, call, patch
 
-from OTAnalytics.application.use_cases.load_track_files import LoadTrackFiles
-from OTAnalytics.domain.track import TrackId
-from OTAnalytics.domain.video import SimpleVideo
+from traffic_counter.application.use_cases.load_track_files import LoadTrackFiles
+from traffic_counter.domain.track import TrackId
+from traffic_counter.domain.video import SimpleVideo
 
 
 class TestLoadTrackFile:

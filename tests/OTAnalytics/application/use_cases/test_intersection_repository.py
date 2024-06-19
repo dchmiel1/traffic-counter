@@ -2,14 +2,14 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.application.use_cases.highlight_intersections import (
+from traffic_counter.application.use_cases.highlight_intersections import (
     IntersectionRepository,
 )
-from OTAnalytics.application.use_cases.intersection_repository import (
+from traffic_counter.application.use_cases.intersection_repository import (
     ClearAllIntersections,
 )
-from OTAnalytics.domain.section import SectionId, SectionRepositoryEvent
-from OTAnalytics.domain.track import TrackId
+from traffic_counter.domain.section import SectionId, SectionRepositoryEvent
+from traffic_counter.domain.track import TrackId
 
 
 @pytest.fixture

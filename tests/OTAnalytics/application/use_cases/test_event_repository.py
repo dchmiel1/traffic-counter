@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.application.use_cases.event_repository import AddEvents, ClearAllEvents
-from OTAnalytics.domain.event import Event, EventRepository
-from OTAnalytics.domain.section import SectionId, SectionRepositoryEvent
+from traffic_counter.application.use_cases.event_repository import AddEvents, ClearAllEvents
+from traffic_counter.domain.event import Event, EventRepository
+from traffic_counter.domain.section import SectionId, SectionRepositoryEvent
 
 
 @pytest.fixture

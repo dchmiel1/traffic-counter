@@ -2,22 +2,22 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.domain.track_dataset import TRACK_GEOMETRY_FACTORY
-from OTAnalytics.domain.track_repository import TrackRepository
-from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
+from traffic_counter.domain.track_dataset import TRACK_GEOMETRY_FACTORY
+from traffic_counter.domain.track_repository import TrackRepository
+from traffic_counter.plugin_datastore.track_geometry_store.pygeos_store import (
     PygeosTrackGeometryDataset,
 )
-from OTAnalytics.plugin_datastore.track_store import (
+from traffic_counter.plugin_datastore.track_store import (
     PandasByMaxConfidence,
     PandasTrackDataset,
 )
-from OTAnalytics.plugin_parser import ottrk_dataformat
-from OTAnalytics.plugin_parser.otvision_parser import (
+from traffic_counter.plugin_parser import ottrk_dataformat
+from traffic_counter.plugin_parser.otvision_parser import (
     DEFAULT_TRACK_LENGTH_LIMIT,
     DetectionParser,
     TrackLengthLimit,
 )
-from OTAnalytics.plugin_parser.pandas_parser import PandasDetectionParser
+from traffic_counter.plugin_parser.pandas_parser import PandasDetectionParser
 from tests.conftest import TrackBuilder, assert_equal_track_properties
 
 

@@ -4,59 +4,59 @@ from pathlib import Path
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture
 
-from OTAnalytics.application.analysis.intersect import TracksIntersectingSections
-from OTAnalytics.application.analysis.traffic_counting_specification import (
+from traffic_counter.application.analysis.intersect import TracksIntersectingSections
+from traffic_counter.application.analysis.traffic_counting_specification import (
     CountingSpecificationDto,
     ExportCounts,
 )
-from OTAnalytics.application.datastore import DetectionMetadata, FlowParser, TrackParser
-from OTAnalytics.application.use_cases.create_events import CreateEvents
-from OTAnalytics.application.use_cases.cut_tracks_with_sections import (
+from traffic_counter.application.datastore import DetectionMetadata, FlowParser, TrackParser
+from traffic_counter.application.use_cases.create_events import CreateEvents
+from traffic_counter.application.use_cases.cut_tracks_with_sections import (
     CutTracksIntersectingSection,
 )
-from OTAnalytics.application.use_cases.event_repository import AddEvents, ClearAllEvents
-from OTAnalytics.application.use_cases.section_repository import (
+from traffic_counter.application.use_cases.event_repository import AddEvents, ClearAllEvents
+from traffic_counter.application.use_cases.section_repository import (
     GetSectionsById,
     RemoveSection,
 )
-from OTAnalytics.application.use_cases.track_repository import (
+from traffic_counter.application.use_cases.track_repository import (
     AddAllTracks,
     GetAllTracks,
     GetTracksWithoutSingleDetections,
     RemoveTracks,
 )
-from OTAnalytics.domain.event import EventRepository
-from OTAnalytics.domain.flow import FlowRepository
-from OTAnalytics.domain.geometry import Coordinate, RelativeOffsetCoordinate
-from OTAnalytics.domain.section import (
+from traffic_counter.domain.event import EventRepository
+from traffic_counter.domain.flow import FlowRepository
+from traffic_counter.domain.geometry import Coordinate, RelativeOffsetCoordinate
+from traffic_counter.domain.section import (
     LineSection,
     Section,
     SectionId,
     SectionRepository,
 )
-from OTAnalytics.domain.track_repository import TrackRepository
-from OTAnalytics.domain.types import EventType
-from OTAnalytics.plugin_datastore.python_track_store import (
+from traffic_counter.domain.track_repository import TrackRepository
+from traffic_counter.domain.types import EventType
+from traffic_counter.plugin_datastore.python_track_store import (
     ByMaxConfidence,
     PythonTrackDataset,
 )
-from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
+from traffic_counter.plugin_datastore.track_geometry_store.pygeos_store import (
     PygeosTrackGeometryDataset,
 )
-from OTAnalytics.plugin_datastore.track_store import (
+from traffic_counter.plugin_datastore.track_store import (
     PandasByMaxConfidence,
     PandasTrackDataset,
 )
-from OTAnalytics.plugin_intersect.simple.cut_tracks_with_sections import (
+from traffic_counter.plugin_intersect.simple.cut_tracks_with_sections import (
     SimpleCutTracksIntersectingSection,
 )
-from OTAnalytics.plugin_parser.otvision_parser import (
+from traffic_counter.plugin_parser.otvision_parser import (
     OtFlowParser,
     OttrkParser,
     PythonDetectionParser,
 )
-from OTAnalytics.plugin_parser.pandas_parser import PandasDetectionParser
-from OTAnalytics.plugin_ui.main_application import ApplicationStarter
+from traffic_counter.plugin_parser.pandas_parser import PandasDetectionParser
+from traffic_counter.plugin_ui.main_application import ApplicationStarter
 
 NUM_PROCESSES = 1
 

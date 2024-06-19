@@ -1,7 +1,7 @@
 from unittest.mock import Mock, call
 
-from OTAnalytics.application.use_cases.reset_project_config import ResetProjectConfig
-from OTAnalytics.application.use_cases.update_project import ProjectUpdater
+from traffic_counter.application.use_cases.reset_project_config import ResetProjectConfig
+from traffic_counter.application.use_cases.update_project import ProjectUpdater
 
 
 class TestResetProjectConfig:

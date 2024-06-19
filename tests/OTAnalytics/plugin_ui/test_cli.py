@@ -6,17 +6,17 @@ from unittest.mock import Mock, call, patch
 
 import pytest
 
-from OTAnalytics.application.analysis.traffic_counting import (
+from traffic_counter.application.analysis.traffic_counting import (
     ExportCounts,
     ExportTrafficCounting,
     FilterBySectionEnterEvent,
     SimpleRoadUserAssigner,
     SimpleTaggerFactory,
 )
-from OTAnalytics.application.analysis.traffic_counting_specification import (
+from traffic_counter.application.analysis.traffic_counting_specification import (
     CountingSpecificationDto,
 )
-from OTAnalytics.application.config import (
+from traffic_counter.application.config import (
     DEFAULT_COUNT_INTERVAL_TIME_UNIT,
     DEFAULT_COUNTS_FILE_STEM,
     DEFAULT_COUNTS_FILE_TYPE,
@@ -24,34 +24,34 @@ from OTAnalytics.application.config import (
     DEFAULT_NUM_PROCESSES,
     DEFAULT_TRACK_FILE_TYPE,
 )
-from OTAnalytics.application.datastore import FlowParser, TrackParser, VideoParser
-from OTAnalytics.application.eventlist import SceneActionDetector
-from OTAnalytics.application.logger import DEFAULT_LOG_FILE
-from OTAnalytics.application.parser.cli_parser import CliArguments, CliParseError
-from OTAnalytics.application.parser.config_parser import ConfigParser
-from OTAnalytics.application.run_configuration import RunConfiguration
-from OTAnalytics.application.state import TracksMetadata, VideosMetadata
-from OTAnalytics.application.use_cases.create_events import (
+from traffic_counter.application.datastore import FlowParser, TrackParser, VideoParser
+from traffic_counter.application.eventlist import SceneActionDetector
+from traffic_counter.application.logger import DEFAULT_LOG_FILE
+from traffic_counter.application.parser.cli_parser import CliArguments, CliParseError
+from traffic_counter.application.parser.config_parser import ConfigParser
+from traffic_counter.application.run_configuration import RunConfiguration
+from traffic_counter.application.state import TracksMetadata, VideosMetadata
+from traffic_counter.application.use_cases.create_events import (
     CreateEvents,
     SimpleCreateIntersectionEvents,
     SimpleCreateSceneEvents,
 )
-from OTAnalytics.application.use_cases.create_intersection_events import (
+from traffic_counter.application.use_cases.create_intersection_events import (
     BatchedTracksRunIntersect,
 )
-from OTAnalytics.application.use_cases.cut_tracks_with_sections import (
+from traffic_counter.application.use_cases.cut_tracks_with_sections import (
     CutTracksIntersectingSection,
 )
-from OTAnalytics.application.use_cases.event_repository import AddEvents, ClearAllEvents
-from OTAnalytics.application.use_cases.export_events import EventListExporter
-from OTAnalytics.application.use_cases.flow_repository import AddFlow, FlowRepository
-from OTAnalytics.application.use_cases.section_repository import (
+from traffic_counter.application.use_cases.event_repository import AddEvents, ClearAllEvents
+from traffic_counter.application.use_cases.export_events import EventListExporter
+from traffic_counter.application.use_cases.flow_repository import AddFlow, FlowRepository
+from traffic_counter.application.use_cases.section_repository import (
     AddSection,
     GetAllSections,
     GetSectionsById,
     RemoveSection,
 )
-from OTAnalytics.application.use_cases.track_repository import (
+from traffic_counter.application.use_cases.track_repository import (
     AddAllTracks,
     ClearAllTracks,
     GetAllTrackIds,
@@ -59,31 +59,31 @@ from OTAnalytics.application.use_cases.track_repository import (
     GetTracksWithoutSingleDetections,
     RemoveTracks,
 )
-from OTAnalytics.domain.event import EventRepository
-from OTAnalytics.domain.progress import NoProgressbarBuilder
-from OTAnalytics.domain.section import SectionId, SectionRepository, SectionType
-from OTAnalytics.domain.track import TrackId
-from OTAnalytics.domain.track_repository import TrackRepository
-from OTAnalytics.plugin_datastore.python_track_store import (
+from traffic_counter.domain.event import EventRepository
+from traffic_counter.domain.progress import NoProgressbarBuilder
+from traffic_counter.domain.section import SectionId, SectionRepository, SectionType
+from traffic_counter.domain.track import TrackId
+from traffic_counter.domain.track_repository import TrackRepository
+from traffic_counter.plugin_datastore.python_track_store import (
     ByMaxConfidence,
     PythonTrackDataset,
 )
-from OTAnalytics.plugin_intersect.simple.cut_tracks_with_sections import (
+from traffic_counter.plugin_intersect.simple.cut_tracks_with_sections import (
     SimpleCutTracksIntersectingSection,
 )
-from OTAnalytics.plugin_intersect_parallelization.multiprocessing import (
+from traffic_counter.plugin_intersect_parallelization.multiprocessing import (
     MultiprocessingIntersectParallelization,
 )
-from OTAnalytics.plugin_parser.export import (
+from traffic_counter.plugin_parser.export import (
     AddSectionInformationExporterFactory,
     FillZerosExporterFactory,
     SimpleExporterFactory,
 )
-from OTAnalytics.plugin_parser.otconfig_parser import (
+from traffic_counter.plugin_parser.otconfig_parser import (
     OtConfigFormatFixer,
     OtConfigParser,
 )
-from OTAnalytics.plugin_parser.otvision_parser import (
+from traffic_counter.plugin_parser.otvision_parser import (
     DEFAULT_TRACK_LENGTH_LIMIT,
     CachedVideoParser,
     OtFlowParser,
@@ -91,17 +91,17 @@ from OTAnalytics.plugin_parser.otvision_parser import (
     PythonDetectionParser,
     SimpleVideoParser,
 )
-from OTAnalytics.plugin_prototypes.eventlist_exporter.eventlist_exporter import (
+from traffic_counter.plugin_prototypes.eventlist_exporter.eventlist_exporter import (
     AVAILABLE_EVENTLIST_EXPORTERS,
     OTC_OTEVENTS_FORMAT_NAME,
     provide_available_eventlist_exporter,
 )
-from OTAnalytics.plugin_ui.cli import (
+from traffic_counter.plugin_ui.cli import (
     InvalidSectionFileType,
     OTAnalyticsCli,
     SectionsFileDoesNotExist,
 )
-from OTAnalytics.plugin_video_processing.video_reader import OpenCvVideoReader
+from traffic_counter.plugin_video_processing.video_reader import OpenCvVideoReader
 from tests.conftest import YieldFixture
 
 CONFIG_FILE = "path/to/config.otconfig"

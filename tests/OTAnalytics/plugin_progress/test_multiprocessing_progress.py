@@ -5,9 +5,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.adapter_ui.abstract_progressbar_popup import ProgressbarPopupBuilder
-from OTAnalytics.domain.progress import Counter
-from OTAnalytics.plugin_progress.multiprocessing_progress import (
+from traffic_counter.adapter_ui.abstract_progressbar_popup import ProgressbarPopupBuilder
+from traffic_counter.domain.progress import Counter
+from traffic_counter.plugin_progress.multiprocessing_progress import (
     ProcessSafeCounter,
     ProcessSafePollingProgressbarBuilder,
 )

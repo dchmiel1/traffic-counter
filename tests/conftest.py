@@ -7,25 +7,25 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.domain.event import Event
-from OTAnalytics.domain.geometry import DirectionVector2D, ImageCoordinate
-from OTAnalytics.domain.section import Section, SectionId
-from OTAnalytics.domain.track import Detection, Track, TrackId
-from OTAnalytics.domain.track_dataset import TrackDataset
-from OTAnalytics.domain.types import EventType
-from OTAnalytics.plugin_datastore.python_track_store import PythonDetection, PythonTrack
-from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
+from traffic_counter.domain.event import Event
+from traffic_counter.domain.geometry import DirectionVector2D, ImageCoordinate
+from traffic_counter.domain.section import Section, SectionId
+from traffic_counter.domain.track import Detection, Track, TrackId
+from traffic_counter.domain.track_dataset import TrackDataset
+from traffic_counter.domain.types import EventType
+from traffic_counter.plugin_datastore.python_track_store import PythonDetection, PythonTrack
+from traffic_counter.plugin_datastore.track_geometry_store.pygeos_store import (
     PygeosTrackGeometryDataset,
 )
-from OTAnalytics.plugin_datastore.track_store import PandasByMaxConfidence
-from OTAnalytics.plugin_parser import ottrk_dataformat
-from OTAnalytics.plugin_parser.otconfig_parser import OtConfigFormatFixer
-from OTAnalytics.plugin_parser.otvision_parser import (
+from traffic_counter.plugin_datastore.track_store import PandasByMaxConfidence
+from traffic_counter.plugin_parser import ottrk_dataformat
+from traffic_counter.plugin_parser.otconfig_parser import OtConfigFormatFixer
+from traffic_counter.plugin_parser.otvision_parser import (
     DEFAULT_TRACK_LENGTH_LIMIT,
     OtFlowParser,
     OttrkParser,
 )
-from OTAnalytics.plugin_parser.pandas_parser import PandasDetectionParser
+from traffic_counter.plugin_parser.pandas_parser import PandasDetectionParser
 
 T = TypeVar("T")
 YieldFixture = Generator[T, None, None]

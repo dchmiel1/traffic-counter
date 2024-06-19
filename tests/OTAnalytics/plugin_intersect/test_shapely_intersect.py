@@ -1,7 +1,7 @@
 import pytest
 
-from OTAnalytics.domain.geometry import Coordinate, Line, Polygon
-from OTAnalytics.plugin_intersect.shapely.intersect import ShapelyIntersector
+from traffic_counter.domain.geometry import Coordinate, Line, Polygon
+from traffic_counter.plugin_intersect.shapely.intersect import ShapelyIntersector
 
 
 class TestShapelyIntersector:

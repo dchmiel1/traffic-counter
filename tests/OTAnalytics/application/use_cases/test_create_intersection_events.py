@@ -3,27 +3,27 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.use_cases.create_intersection_events import (
+from traffic_counter.application.use_cases.create_intersection_events import (
     IntersectAreaByTrackPoints,
     IntersectByIntersectionPoints,
     separate_sections,
 )
-from OTAnalytics.domain.geometry import (
+from traffic_counter.domain.geometry import (
     Coordinate,
     DirectionVector2D,
     RelativeOffsetCoordinate,
     apply_offset,
 )
-from OTAnalytics.domain.section import (
+from traffic_counter.domain.section import (
     Area,
     LineSection,
     Section,
     SectionId,
     SectionType,
 )
-from OTAnalytics.domain.track import Detection, Track
-from OTAnalytics.domain.track_dataset import IntersectionPoint, TrackDataset
-from OTAnalytics.domain.types import EventType
+from traffic_counter.domain.track import Detection, Track
+from traffic_counter.domain.track_dataset import IntersectionPoint, TrackDataset
+from traffic_counter.domain.types import EventType
 from tests.conftest import TrackBuilder
 
 

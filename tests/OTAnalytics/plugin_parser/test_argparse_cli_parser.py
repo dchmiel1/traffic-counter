@@ -1,9 +1,9 @@
 import sys
 from unittest.mock import patch
 
-from OTAnalytics.application.config import DEFAULT_TRACK_FILE_TYPE
-from OTAnalytics.application.parser.cli_parser import CliArguments
-from OTAnalytics.plugin_parser.argparse_cli_parser import ArgparseCliParser
+from traffic_counter.application.config import DEFAULT_TRACK_FILE_TYPE
+from traffic_counter.application.parser.cli_parser import CliArguments
+from traffic_counter.plugin_parser.argparse_cli_parser import ArgparseCliParser
 
 
 class TestArgparseCliParser:

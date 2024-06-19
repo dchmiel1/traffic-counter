@@ -1,6 +1,6 @@
 import pytest
 
-from OTAnalytics.adapter_ui.helpers import ensure_file_extension_is_present
+from traffic_counter.adapter_ui.helpers import ensure_file_extension_is_present
 
 
 @pytest.mark.parametrize(

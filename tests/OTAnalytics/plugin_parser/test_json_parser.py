@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import ujson
 
-from OTAnalytics.plugin_parser.json_parser import (
+from traffic_counter.plugin_parser.json_parser import (
     parse_json,
     parse_json_bz2,
     write_json,

@@ -4,9 +4,9 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.config import DEFAULT_TRACK_OFFSET
-from OTAnalytics.application.datastore import Datastore, VideoMetadata
-from OTAnalytics.application.state import (
+from traffic_counter.application.config import DEFAULT_TRACK_OFFSET
+from traffic_counter.application.datastore import Datastore, VideoMetadata
+from traffic_counter.application.state import (
     DEFAULT_HEIGHT,
     DEFAULT_WIDTH,
     FlowState,
@@ -20,17 +20,17 @@ from OTAnalytics.application.state import (
     TrackViewState,
     VideosMetadata,
 )
-from OTAnalytics.domain.date import DateRange
-from OTAnalytics.domain.filter import FilterElement
-from OTAnalytics.domain.geometry import RelativeOffsetCoordinate
-from OTAnalytics.domain.section import (
+from traffic_counter.domain.date import DateRange
+from traffic_counter.domain.filter import FilterElement
+from traffic_counter.domain.geometry import RelativeOffsetCoordinate
+from traffic_counter.domain.section import (
     Section,
     SectionId,
     SectionRepositoryEvent,
     SectionType,
 )
-from OTAnalytics.domain.track import Detection, Track, TrackId, TrackImage
-from OTAnalytics.domain.track_repository import (
+from traffic_counter.domain.track import Detection, Track, TrackId, TrackImage
+from traffic_counter.domain.track_repository import (
     TrackObserver,
     TrackRepository,
     TrackRepositoryEvent,

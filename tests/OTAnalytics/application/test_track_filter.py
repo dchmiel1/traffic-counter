@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from OTAnalytics.application.track_filter import (
+from traffic_counter.application.track_filter import (
     NoOpTrackFilter,
     TrackEndsBeforeOrAtDate,
     TrackFilter,
@@ -12,7 +12,7 @@ from OTAnalytics.application.track_filter import (
     TrackPredicate,
     TrackStartsAtOrAfterDate,
 )
-from OTAnalytics.domain.track import Track
+from traffic_counter.domain.track import Track
 from tests.conftest import TrackBuilder
 
 

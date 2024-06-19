@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
-from OTAnalytics.application.use_cases.video_repository import ClearAllVideos
-from OTAnalytics.domain.video import VideoRepository
+from traffic_counter.application.use_cases.video_repository import ClearAllVideos
+from traffic_counter.domain.video import VideoRepository
 
 
 class TestClearAllTrackToVideos:

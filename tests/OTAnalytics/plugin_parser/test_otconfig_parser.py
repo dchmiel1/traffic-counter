@@ -3,20 +3,20 @@ from pathlib import Path
 from typing import Any, Sequence
 from unittest.mock import Mock, PropertyMock, call
 
-from OTAnalytics.application.config_specification import OtConfigDefaultValueProvider
-from OTAnalytics.application.datastore import FlowParser, VideoParser
-from OTAnalytics.application.parser.config_parser import (
+from traffic_counter.application.config_specification import OtConfigDefaultValueProvider
+from traffic_counter.application.datastore import FlowParser, VideoParser
+from traffic_counter.application.parser.config_parser import (
     AnalysisConfig,
     ExportConfig,
     OtConfig,
 )
-from OTAnalytics.application.project import Project
-from OTAnalytics.domain import flow, section, video
-from OTAnalytics.domain.flow import Flow
-from OTAnalytics.domain.section import Section
-from OTAnalytics.domain.video import Video
-from OTAnalytics.plugin_parser.json_parser import parse_json
-from OTAnalytics.plugin_parser.otconfig_parser import (
+from traffic_counter.application.project import Project
+from traffic_counter.domain import flow, section, video
+from traffic_counter.domain.flow import Flow
+from traffic_counter.domain.section import Section
+from traffic_counter.domain.video import Video
+from traffic_counter.plugin_parser.json_parser import parse_json
+from traffic_counter.plugin_parser.otconfig_parser import (
     ANALYSIS,
     COUNT_INTERVALS,
     DEBUG,

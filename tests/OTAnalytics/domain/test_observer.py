@@ -1,7 +1,7 @@
 from typing import Any
 from unittest.mock import Mock
 
-from OTAnalytics.domain.observer import Subject
+from traffic_counter.domain.observer import Subject
 
 
 class TestSubject:

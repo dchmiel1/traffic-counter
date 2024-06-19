@@ -3,13 +3,13 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.application.eventlist import SceneActionDetector
-from OTAnalytics.domain.event import EventType
-from OTAnalytics.domain.geometry import Coordinate, RelativeOffsetCoordinate
-from OTAnalytics.domain.section import LineSection, SectionId
-from OTAnalytics.domain.track import Detection, Track, TrackId
-from OTAnalytics.domain.track_dataset import TrackDataset
-from OTAnalytics.plugin_datastore.python_track_store import PythonDetection, PythonTrack
+from traffic_counter.application.eventlist import SceneActionDetector
+from traffic_counter.domain.event import EventType
+from traffic_counter.domain.geometry import Coordinate, RelativeOffsetCoordinate
+from traffic_counter.domain.section import LineSection, SectionId
+from traffic_counter.domain.track import Detection, Track, TrackId
+from traffic_counter.domain.track_dataset import TrackDataset
+from traffic_counter.plugin_datastore.python_track_store import PythonDetection, PythonTrack
 
 
 def create_detection(

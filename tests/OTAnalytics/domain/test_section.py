@@ -2,9 +2,9 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.domain.event import EventType
-from OTAnalytics.domain.geometry import Coordinate, RelativeOffsetCoordinate, X, Y
-from OTAnalytics.domain.section import (
+from traffic_counter.domain.event import EventType
+from traffic_counter.domain.geometry import Coordinate, RelativeOffsetCoordinate, X, Y
+from traffic_counter.domain.section import (
     COORDINATES,
     ID,
     NAME,

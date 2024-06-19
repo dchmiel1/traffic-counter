@@ -5,7 +5,7 @@ from unittest.mock import Mock
 import pandas
 from pandas import DataFrame
 
-from OTAnalytics.application.analysis.traffic_counting import (
+from traffic_counter.application.analysis.traffic_counting import (
     LEVEL_CLASSIFICATION,
     LEVEL_END_TIME,
     LEVEL_FLOW,
@@ -21,12 +21,12 @@ from OTAnalytics.application.analysis.traffic_counting import (
     create_mode_tag,
     create_timeslot_tag,
 )
-from OTAnalytics.application.analysis.traffic_counting_specification import (
+from traffic_counter.application.analysis.traffic_counting_specification import (
     CountingSpecificationDto,
     ExportSpecificationDto,
     FlowNameDto,
 )
-from OTAnalytics.plugin_parser.export import CsvExport, FillZerosExporter, TagExploder
+from traffic_counter.plugin_parser.export import CsvExport, FillZerosExporter, TagExploder
 
 
 class TestCsvExport:

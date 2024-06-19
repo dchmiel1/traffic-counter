@@ -3,15 +3,15 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.application.config import (
+from traffic_counter.application.config import (
     DEFAULT_COUNTING_INTERVAL_IN_MINUTES,
     DEFAULT_EVENTLIST_FILE_TYPE,
     DEFAULT_NUM_PROCESSES,
 )
-from OTAnalytics.application.logger import DEFAULT_LOG_FILE
-from OTAnalytics.application.parser.cli_parser import CliArguments
-from OTAnalytics.application.parser.config_parser import OtConfig
-from OTAnalytics.application.run_configuration import RunConfiguration
+from traffic_counter.application.logger import DEFAULT_LOG_FILE
+from traffic_counter.application.parser.cli_parser import CliArguments
+from traffic_counter.application.parser.config_parser import OtConfig
+from traffic_counter.application.run_configuration import RunConfiguration
 
 
 @pytest.fixture

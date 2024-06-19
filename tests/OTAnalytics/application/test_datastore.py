@@ -7,7 +7,7 @@ import pytest
 from numpy import array, int32
 from PIL import Image
 
-from OTAnalytics.application.datastore import (
+from traffic_counter.application.datastore import (
     Datastore,
     EventListParser,
     FlowParser,
@@ -17,22 +17,22 @@ from OTAnalytics.application.datastore import (
     VideoMetadata,
     VideoParser,
 )
-from OTAnalytics.application.parser.config_parser import ConfigParser, OtConfig
-from OTAnalytics.application.project import Project
-from OTAnalytics.domain.event import EventRepository
-from OTAnalytics.domain.flow import Flow, FlowRepository
-from OTAnalytics.domain.geometry import Coordinate, RelativeOffsetCoordinate
-from OTAnalytics.domain.progress import ProgressbarBuilder
-from OTAnalytics.domain.section import (
+from traffic_counter.application.parser.config_parser import ConfigParser, OtConfig
+from traffic_counter.application.project import Project
+from traffic_counter.domain.event import EventRepository
+from traffic_counter.domain.flow import Flow, FlowRepository
+from traffic_counter.domain.geometry import Coordinate, RelativeOffsetCoordinate
+from traffic_counter.domain.progress import ProgressbarBuilder
+from traffic_counter.domain.section import (
     LineSection,
     Section,
     SectionId,
     SectionRepository,
 )
-from OTAnalytics.domain.track import TrackImage
-from OTAnalytics.domain.track_repository import TrackFileRepository, TrackRepository
-from OTAnalytics.domain.types import EventType
-from OTAnalytics.domain.video import SimpleVideo, Video, VideoReader, VideoRepository
+from traffic_counter.domain.track import TrackImage
+from traffic_counter.domain.track_repository import TrackFileRepository, TrackRepository
+from traffic_counter.domain.types import EventType
+from traffic_counter.domain.video import SimpleVideo, Video, VideoReader, VideoRepository
 
 FIRST_START_DATE = datetime(
     year=2019,

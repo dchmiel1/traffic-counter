@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from OTAnalytics.domain.track import PilImage
-from OTAnalytics.plugin_video_processing.video_reader import OpenCvVideoReader
+from traffic_counter.domain.track import PilImage
+from traffic_counter.plugin_video_processing.video_reader import OpenCvVideoReader
 
 
 class TestOpenCvVideoReader:

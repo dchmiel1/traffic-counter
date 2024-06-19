@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from OTAnalytics.application.use_cases.track_repository import (
+from traffic_counter.application.use_cases.track_repository import (
     AddAllTracks,
     ClearAllTracks,
     GetAllTrackFiles,
@@ -15,9 +15,9 @@ from OTAnalytics.application.use_cases.track_repository import (
     RemoveTracks,
     TrackRepositorySize,
 )
-from OTAnalytics.domain.track import Track, TrackId
-from OTAnalytics.domain.track_dataset import TrackDataset
-from OTAnalytics.domain.track_repository import TrackFileRepository, TrackRepository
+from traffic_counter.domain.track import Track, TrackId
+from traffic_counter.domain.track_dataset import TrackDataset
+from traffic_counter.domain.track_repository import TrackFileRepository, TrackRepository
 
 
 @pytest.fixture

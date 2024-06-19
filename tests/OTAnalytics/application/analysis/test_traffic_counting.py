@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.application.analysis.traffic_counting import (
+from traffic_counter.application.analysis.traffic_counting import (
     LEVEL_CLASSIFICATION,
     LEVEL_END_TIME,
     LEVEL_FLOW,
@@ -37,19 +37,19 @@ from OTAnalytics.application.analysis.traffic_counting import (
     TimeslotTagger,
     create_export_specification,
 )
-from OTAnalytics.application.analysis.traffic_counting_specification import (
+from traffic_counter.application.analysis.traffic_counting_specification import (
     CountingSpecificationDto,
     FlowNameDto,
 )
-from OTAnalytics.application.use_cases.create_events import CreateEvents
-from OTAnalytics.application.use_cases.section_repository import GetSectionsById
-from OTAnalytics.domain.event import Event, EventRepository
-from OTAnalytics.domain.flow import Flow, FlowId, FlowRepository
-from OTAnalytics.domain.geometry import DirectionVector2D, ImageCoordinate
-from OTAnalytics.domain.section import SectionId
-from OTAnalytics.domain.track import Track, TrackId
-from OTAnalytics.domain.track_repository import TrackRepository
-from OTAnalytics.domain.types import EventType
+from traffic_counter.application.use_cases.create_events import CreateEvents
+from traffic_counter.application.use_cases.section_repository import GetSectionsById
+from traffic_counter.domain.event import Event, EventRepository
+from traffic_counter.domain.flow import Flow, FlowId, FlowRepository
+from traffic_counter.domain.geometry import DirectionVector2D, ImageCoordinate
+from traffic_counter.domain.section import SectionId
+from traffic_counter.domain.track import Track, TrackId
+from traffic_counter.domain.track_repository import TrackRepository
+from traffic_counter.domain.types import EventType
 from tests.conftest import TrackBuilder
 
 

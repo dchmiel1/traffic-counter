@@ -2,12 +2,12 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.progress import (
+from traffic_counter.application.progress import (
     AutoIncrementingProgressbar,
     ManualIncrementingProgressbar,
     SimpleCounter,
 )
-from OTAnalytics.domain.progress import Counter
+from traffic_counter.domain.progress import Counter
 
 
 class TestSimpleCounter:

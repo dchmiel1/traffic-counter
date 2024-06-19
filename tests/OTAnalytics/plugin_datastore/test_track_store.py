@@ -5,29 +5,29 @@ import numpy
 import pytest
 from pandas import DataFrame, Series
 
-from OTAnalytics.domain import track
-from OTAnalytics.domain.event import Event
-from OTAnalytics.domain.geometry import (
+from traffic_counter.domain import track
+from traffic_counter.domain.event import Event
+from traffic_counter.domain.geometry import (
     ImageCoordinate,
     RelativeOffsetCoordinate,
     calculate_direction_vector,
 )
-from OTAnalytics.domain.section import LineSection
-from OTAnalytics.domain.track import Track, TrackId
-from OTAnalytics.domain.track_dataset import (
+from traffic_counter.domain.section import LineSection
+from traffic_counter.domain.track import Track, TrackId
+from traffic_counter.domain.track_dataset import (
     TRACK_GEOMETRY_FACTORY,
     TrackDataset,
     TrackGeometryDataset,
 )
-from OTAnalytics.domain.types import EventType
-from OTAnalytics.plugin_datastore.python_track_store import (
+from traffic_counter.domain.types import EventType
+from traffic_counter.plugin_datastore.python_track_store import (
     PythonTrack,
     PythonTrackDataset,
 )
-from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
+from traffic_counter.plugin_datastore.track_geometry_store.pygeos_store import (
     PygeosTrackGeometryDataset,
 )
-from OTAnalytics.plugin_datastore.track_store import (
+from traffic_counter.plugin_datastore.track_store import (
     PandasDetection,
     PandasTrack,
     PandasTrackDataset,

@@ -2,13 +2,13 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.use_cases.flow_repository import (
+from traffic_counter.application.use_cases.flow_repository import (
     AddFlow,
     ClearAllFlows,
     FlowAlreadyExists,
     FlowIdAlreadyExists,
 )
-from OTAnalytics.domain.flow import Flow, FlowId, FlowRepository
+from traffic_counter.domain.flow import Flow, FlowId, FlowRepository
 
 
 @pytest.fixture

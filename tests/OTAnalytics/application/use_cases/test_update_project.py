@@ -3,9 +3,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.application.datastore import Datastore
-from OTAnalytics.application.project import Project
-from OTAnalytics.application.use_cases.update_project import ProjectUpdater
+from traffic_counter.application.datastore import Datastore
+from traffic_counter.application.project import Project
+from traffic_counter.application.use_cases.update_project import ProjectUpdater
 
 
 @pytest.fixture

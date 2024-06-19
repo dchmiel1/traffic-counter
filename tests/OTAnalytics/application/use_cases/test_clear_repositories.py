@@ -1,17 +1,17 @@
 from unittest.mock import Mock
 
-from OTAnalytics.application.use_cases.clear_repositories import ClearRepositories
-from OTAnalytics.application.use_cases.event_repository import ClearAllEvents
-from OTAnalytics.application.use_cases.flow_repository import ClearAllFlows
-from OTAnalytics.application.use_cases.intersection_repository import (
+from traffic_counter.application.use_cases.clear_repositories import ClearRepositories
+from traffic_counter.application.use_cases.event_repository import ClearAllEvents
+from traffic_counter.application.use_cases.flow_repository import ClearAllFlows
+from traffic_counter.application.use_cases.intersection_repository import (
     ClearAllIntersections,
 )
-from OTAnalytics.application.use_cases.section_repository import ClearAllSections
-from OTAnalytics.application.use_cases.track_repository import ClearAllTracks
-from OTAnalytics.application.use_cases.track_to_video_repository import (
+from traffic_counter.application.use_cases.section_repository import ClearAllSections
+from traffic_counter.application.use_cases.track_repository import ClearAllTracks
+from traffic_counter.application.use_cases.track_to_video_repository import (
     ClearAllTrackToVideos,
 )
-from OTAnalytics.application.use_cases.video_repository import ClearAllVideos
+from traffic_counter.application.use_cases.video_repository import ClearAllVideos
 
 
 class TestClearRepositories:

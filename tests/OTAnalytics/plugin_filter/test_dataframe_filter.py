@@ -5,8 +5,8 @@ from unittest.mock import Mock
 import pytest
 from pandas import DataFrame
 
-from OTAnalytics.domain import track
-from OTAnalytics.domain.track import (
+from traffic_counter.domain import track
+from traffic_counter.domain.track import (
     CLASSIFICATION,
     FRAME,
     OCCURRENCE,
@@ -14,7 +14,7 @@ from OTAnalytics.domain.track import (
     Detection,
     Track,
 )
-from OTAnalytics.plugin_filter.dataframe_filter import (
+from traffic_counter.plugin_filter.dataframe_filter import (
     DataFrameEndsBeforeOrAtDate,
     DataFrameFilter,
     DataFrameFilterBuilder,

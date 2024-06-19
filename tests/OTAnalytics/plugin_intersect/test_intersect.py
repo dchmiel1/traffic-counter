@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.domain.section import Section, SectionId
-from OTAnalytics.domain.track import Track
-from OTAnalytics.plugin_intersect.simple_intersect import (
+from traffic_counter.domain.section import Section, SectionId
+from traffic_counter.domain.track import Track
+from traffic_counter.plugin_intersect.simple_intersect import (
     SimpleTracksIntersectingSections,
 )
 from tests.conftest import TrackBuilder

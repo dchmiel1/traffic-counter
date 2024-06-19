@@ -2,7 +2,7 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.use_cases.section_repository import (
+from traffic_counter.application.use_cases.section_repository import (
     AddSection,
     ClearAllSections,
     GetAllSections,
@@ -12,9 +12,9 @@ from OTAnalytics.application.use_cases.section_repository import (
     SectionAlreadyExists,
     SectionIdAlreadyExists,
 )
-from OTAnalytics.domain.geometry import RelativeOffsetCoordinate
-from OTAnalytics.domain.section import Section, SectionId, SectionRepository
-from OTAnalytics.domain.types import EventType
+from traffic_counter.domain.geometry import RelativeOffsetCoordinate
+from traffic_counter.domain.section import Section, SectionId, SectionRepository
+from traffic_counter.domain.types import EventType
 
 
 @pytest.fixture

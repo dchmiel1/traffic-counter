@@ -3,7 +3,7 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.use_cases.generate_flows import (
+from traffic_counter.application.use_cases.generate_flows import (
     AndPredicate,
     CrossProductFlowGenerator,
     FilterExisting,
@@ -14,8 +14,8 @@ from OTAnalytics.application.use_cases.generate_flows import (
     FlowPredicate,
     GenerateFlows,
 )
-from OTAnalytics.domain.flow import Flow, FlowId, FlowRepository
-from OTAnalytics.domain.section import Section, SectionId, SectionRepository
+from traffic_counter.domain.flow import Flow, FlowId, FlowRepository
+from traffic_counter.domain.section import Section, SectionId, SectionRepository
 
 
 class TestFilterSameSection:

@@ -3,14 +3,14 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.domain.geometry import Coordinate
-from OTAnalytics.domain.section import LineSection, SectionId
-from OTAnalytics.domain.track import Track, TrackId
-from OTAnalytics.domain.track_dataset import (
+from traffic_counter.domain.geometry import Coordinate
+from traffic_counter.domain.section import LineSection, SectionId
+from traffic_counter.domain.track import Track, TrackId
+from traffic_counter.domain.track_dataset import (
     TRACK_GEOMETRY_FACTORY,
     TrackGeometryDataset,
 )
-from OTAnalytics.plugin_datastore.track_geometry_store.pygeos_store import (
+from traffic_counter.plugin_datastore.track_geometry_store.pygeos_store import (
     PygeosTrackGeometryDataset,
 )
 from tests.conftest import TrackBuilder, assert_equal_track_properties, create_track

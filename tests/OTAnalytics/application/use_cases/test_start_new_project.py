@@ -1,9 +1,9 @@
 from unittest.mock import Mock, patch
 
-from OTAnalytics.application.state import TrackViewState
-from OTAnalytics.application.use_cases.clear_repositories import ClearRepositories
-from OTAnalytics.application.use_cases.reset_project_config import ResetProjectConfig
-from OTAnalytics.application.use_cases.start_new_project import StartNewProject
+from traffic_counter.application.state import TrackViewState
+from traffic_counter.application.use_cases.clear_repositories import ClearRepositories
+from traffic_counter.application.use_cases.reset_project_config import ResetProjectConfig
+from traffic_counter.application.use_cases.start_new_project import StartNewProject
 
 
 class TestStartNewProject:

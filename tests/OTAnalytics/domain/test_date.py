@@ -1,6 +1,6 @@
 import pytest
 
-from OTAnalytics.domain.date import (
+from traffic_counter.domain.date import (
     validate_date,
     validate_hour,
     validate_minute,

@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.domain.event import (
+from traffic_counter.domain.event import (
     DATE_FORMAT,
     DIRECTION_VECTOR,
     EVENT_COORDINATE,
@@ -24,10 +24,10 @@ from OTAnalytics.domain.event import (
     SceneEventBuilder,
     SectionEventBuilder,
 )
-from OTAnalytics.domain.geometry import DirectionVector2D, ImageCoordinate
-from OTAnalytics.domain.section import Section, SectionId
-from OTAnalytics.domain.track import Detection, TrackId
-from OTAnalytics.domain.types import EventType, EventTypeParseError
+from traffic_counter.domain.geometry import DirectionVector2D, ImageCoordinate
+from traffic_counter.domain.section import Section, SectionId
+from traffic_counter.domain.track import Detection, TrackId
+from traffic_counter.domain.types import EventType, EventTypeParseError
 
 
 @pytest.fixture

@@ -3,20 +3,20 @@ from unittest.mock import Mock, PropertyMock, call, patch
 
 import pytest
 
-from OTAnalytics.application.analysis.intersect import TracksIntersectingSections
-from OTAnalytics.application.analysis.traffic_counting import (
+from traffic_counter.application.analysis.intersect import TracksIntersectingSections
+from traffic_counter.application.analysis.traffic_counting import (
     EventPair,
     RoadUserAssigner,
     RoadUserAssignment,
     RoadUserAssignments,
 )
-from OTAnalytics.application.state import (
+from traffic_counter.application.state import (
     FlowState,
     ObservableProperty,
     SectionState,
     TrackViewState,
 )
-from OTAnalytics.application.use_cases.highlight_intersections import (
+from traffic_counter.application.use_cases.highlight_intersections import (
     IntersectionRepository,
     TracksAssignedToSelectedFlows,
     TracksIntersectingGivenSections,
@@ -24,14 +24,14 @@ from OTAnalytics.application.use_cases.highlight_intersections import (
     TracksNotIntersectingSelection,
     TracksOverlapOccurrenceWindow,
 )
-from OTAnalytics.application.use_cases.section_repository import GetSectionsById
-from OTAnalytics.domain.date import DateRange
-from OTAnalytics.domain.event import Event, EventRepository
-from OTAnalytics.domain.filter import FilterElement
-from OTAnalytics.domain.flow import Flow, FlowId, FlowRepository
-from OTAnalytics.domain.section import Section, SectionId
-from OTAnalytics.domain.track import Detection, Track, TrackId, TrackIdProvider
-from OTAnalytics.domain.track_repository import TrackRepository
+from traffic_counter.application.use_cases.section_repository import GetSectionsById
+from traffic_counter.domain.date import DateRange
+from traffic_counter.domain.event import Event, EventRepository
+from traffic_counter.domain.filter import FilterElement
+from traffic_counter.domain.flow import Flow, FlowId, FlowRepository
+from traffic_counter.domain.section import Section, SectionId
+from traffic_counter.domain.track import Detection, Track, TrackId, TrackIdProvider
+from traffic_counter.domain.track_repository import TrackRepository
 
 
 @pytest.fixture

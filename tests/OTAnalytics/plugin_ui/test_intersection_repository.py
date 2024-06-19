@@ -1,8 +1,8 @@
 import pytest
 
-from OTAnalytics.domain.section import SectionId
-from OTAnalytics.domain.track import TrackId
-from OTAnalytics.plugin_ui.intersection_repository import PythonIntersectionRepository
+from traffic_counter.domain.section import SectionId
+from traffic_counter.domain.track import TrackId
+from traffic_counter.plugin_ui.intersection_repository import PythonIntersectionRepository
 
 
 @pytest.fixture

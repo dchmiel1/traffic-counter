@@ -3,7 +3,7 @@ from unittest.mock import Mock, call, patch
 
 import pytest
 
-from OTAnalytics.domain.video import (
+from traffic_counter.domain.video import (
     PATH,
     DifferentDrivesException,
     SimpleVideo,

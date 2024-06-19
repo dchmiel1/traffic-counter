@@ -2,14 +2,14 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.plotting import (
+from traffic_counter.application.plotting import (
     LayeredPlotter,
     PlottingLayer,
     TrackBackgroundPlotter,
 )
-from OTAnalytics.application.state import Plotter, TrackViewState
-from OTAnalytics.domain.track import TrackImage
-from OTAnalytics.domain.video import Video
+from traffic_counter.application.state import Plotter, TrackViewState
+from traffic_counter.domain.track import TrackImage
+from traffic_counter.domain.video import Video
 
 
 class TestLayeredPlotter:

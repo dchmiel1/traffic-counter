@@ -5,31 +5,31 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.domain.event import VIDEO_NAME, Event
-from OTAnalytics.domain.geometry import (
+from traffic_counter.domain.event import VIDEO_NAME, Event
+from traffic_counter.domain.geometry import (
     ImageCoordinate,
     RelativeOffsetCoordinate,
     calculate_direction_vector,
 )
-from OTAnalytics.domain.section import LineSection
-from OTAnalytics.domain.track import (
+from traffic_counter.domain.section import LineSection
+from traffic_counter.domain.track import (
     Detection,
     Track,
     TrackClassificationCalculator,
     TrackHasNoDetectionError,
     TrackId,
 )
-from OTAnalytics.domain.track_dataset import TrackGeometryDataset
-from OTAnalytics.domain.types import EventType
-from OTAnalytics.plugin_datastore.python_track_store import (
+from traffic_counter.domain.track_dataset import TrackGeometryDataset
+from traffic_counter.domain.types import EventType
+from traffic_counter.plugin_datastore.python_track_store import (
     ByMaxConfidence,
     PythonDetection,
     PythonTrack,
     PythonTrackDataset,
     SimpleCutTrackSegmentBuilder,
 )
-from OTAnalytics.plugin_datastore.track_store import extract_hostname
-from OTAnalytics.plugin_parser import ottrk_dataformat as ottrk_format
+from traffic_counter.plugin_datastore.track_store import extract_hostname
+from traffic_counter.plugin_parser import ottrk_dataformat as ottrk_format
 from tests.conftest import TrackBuilder, create_track
 from tests.OTAnalytics.plugin_datastore.conftest import (
     assert_track_geometry_dataset_add_all_called_correctly,

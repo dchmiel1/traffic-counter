@@ -4,15 +4,15 @@ from unittest.mock import Mock, patch
 import pytest
 from pandas import DataFrame
 
-from OTAnalytics.application.state import ObservableProperty, TrackViewState
-from OTAnalytics.domain import track
-from OTAnalytics.domain.event import Event
-from OTAnalytics.domain.filter import Filter, FilterBuilder, FilterElement
-from OTAnalytics.domain.flow import Flow, FlowId, FlowRepository
-from OTAnalytics.domain.geometry import RelativeOffsetCoordinate
-from OTAnalytics.domain.progress import NoProgressbarBuilder
-from OTAnalytics.domain.section import SectionId
-from OTAnalytics.domain.track import (
+from traffic_counter.application.state import ObservableProperty, TrackViewState
+from traffic_counter.domain import track
+from traffic_counter.domain.event import Event
+from traffic_counter.domain.filter import Filter, FilterBuilder, FilterElement
+from traffic_counter.domain.flow import Flow, FlowId, FlowRepository
+from traffic_counter.domain.geometry import RelativeOffsetCoordinate
+from traffic_counter.domain.progress import NoProgressbarBuilder
+from traffic_counter.domain.section import SectionId
+from traffic_counter.domain.track import (
     OCCURRENCE,
     TRACK_CLASSIFICATION,
     Detection,
@@ -21,13 +21,13 @@ from OTAnalytics.domain.track import (
     TrackIdProvider,
     TrackImage,
 )
-from OTAnalytics.domain.track_repository import TrackRepository, TrackRepositoryEvent
-from OTAnalytics.plugin_datastore.python_track_store import (
+from traffic_counter.domain.track_repository import TrackRepository, TrackRepositoryEvent
+from traffic_counter.plugin_datastore.python_track_store import (
     PythonDetection,
     PythonTrack,
     PythonTrackDataset,
 )
-from OTAnalytics.plugin_prototypes.track_visualization.track_viz import (
+from traffic_counter.plugin_prototypes.track_visualization.track_viz import (
     CachedPandasTrackProvider,
     ColorPaletteProvider,
     EventToFlowResolver,

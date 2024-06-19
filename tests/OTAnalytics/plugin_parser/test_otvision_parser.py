@@ -4,17 +4,17 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics import version
-from OTAnalytics.application.datastore import VideoMetadata, VideoParser
-from OTAnalytics.domain import flow, geometry, section
-from OTAnalytics.domain.event import EVENT_LIST, Event, EventType
-from OTAnalytics.domain.flow import Flow, FlowId
-from OTAnalytics.domain.geometry import (
+from traffic_counter import version
+from traffic_counter.application.datastore import VideoMetadata, VideoParser
+from traffic_counter.domain import flow, geometry, section
+from traffic_counter.domain.event import EVENT_LIST, Event, EventType
+from traffic_counter.domain.flow import Flow, FlowId
+from traffic_counter.domain.geometry import (
     DirectionVector2D,
     ImageCoordinate,
     RelativeOffsetCoordinate,
 )
-from OTAnalytics.domain.section import (
+from traffic_counter.domain.section import (
     SECTIONS,
     Area,
     Coordinate,
@@ -22,23 +22,23 @@ from OTAnalytics.domain.section import (
     Section,
     SectionId,
 )
-from OTAnalytics.domain.track import (
+from traffic_counter.domain.track import (
     Detection,
     Track,
     TrackClassificationCalculator,
     TrackId,
     TrackImage,
 )
-from OTAnalytics.domain.track_repository import TrackRepository
-from OTAnalytics.domain.video import Video
-from OTAnalytics.plugin_datastore.python_track_store import (
+from traffic_counter.domain.track_repository import TrackRepository
+from traffic_counter.domain.video import Video
+from traffic_counter.plugin_datastore.python_track_store import (
     ByMaxConfidence,
     PythonTrack,
     PythonTrackDataset,
 )
-from OTAnalytics.plugin_parser import dataformat_versions, ottrk_dataformat
-from OTAnalytics.plugin_parser.json_parser import write_json, write_json_bz2
-from OTAnalytics.plugin_parser.otvision_parser import (
+from traffic_counter.plugin_parser import dataformat_versions, ottrk_dataformat
+from traffic_counter.plugin_parser.json_parser import write_json, write_json_bz2
+from traffic_counter.plugin_parser.otvision_parser import (
     DEFAULT_TRACK_LENGTH_LIMIT,
     EVENT_FORMAT_VERSION,
     METADATA,

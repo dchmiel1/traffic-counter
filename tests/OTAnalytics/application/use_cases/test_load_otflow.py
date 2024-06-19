@@ -4,24 +4,24 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from OTAnalytics.application.datastore import FlowParser
-from OTAnalytics.application.use_cases.event_repository import ClearAllEvents
-from OTAnalytics.application.use_cases.flow_repository import (
+from traffic_counter.application.datastore import FlowParser
+from traffic_counter.application.use_cases.event_repository import ClearAllEvents
+from traffic_counter.application.use_cases.flow_repository import (
     AddFlow,
     ClearAllFlows,
     FlowAlreadyExists,
 )
-from OTAnalytics.application.use_cases.load_otflow import (
+from traffic_counter.application.use_cases.load_otflow import (
     LoadOtflow,
     UnableToLoadFlowFile,
 )
-from OTAnalytics.application.use_cases.section_repository import (
+from traffic_counter.application.use_cases.section_repository import (
     AddSection,
     ClearAllSections,
     SectionAlreadyExists,
 )
-from OTAnalytics.domain.flow import Flow
-from OTAnalytics.domain.section import Section
+from traffic_counter.domain.flow import Flow
+from traffic_counter.domain.section import Section
 
 
 class MockDependencies(TypedDict):

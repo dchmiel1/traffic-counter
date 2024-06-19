@@ -1,8 +1,8 @@
 from datetime import datetime
 from unittest.mock import Mock
 
-from OTAnalytics.domain.date import DateRange
-from OTAnalytics.domain.filter import (
+from traffic_counter.domain.date import DateRange
+from traffic_counter.domain.filter import (
     Filter,
     FilterBuilder,
     FilterElement,

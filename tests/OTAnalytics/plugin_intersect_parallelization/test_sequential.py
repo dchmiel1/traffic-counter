@@ -1,10 +1,10 @@
 from typing import Callable, cast
 from unittest.mock import Mock, call
 
-from OTAnalytics.domain.event import Event
-from OTAnalytics.domain.section import Section
-from OTAnalytics.domain.track_dataset import TrackDataset
-from OTAnalytics.plugin_intersect_parallelization.sequential import SequentialIntersect
+from traffic_counter.domain.event import Event
+from traffic_counter.domain.section import Section
+from traffic_counter.domain.track_dataset import TrackDataset
+from traffic_counter.plugin_intersect_parallelization.sequential import SequentialIntersect
 
 
 class TestSequentialIntersect:

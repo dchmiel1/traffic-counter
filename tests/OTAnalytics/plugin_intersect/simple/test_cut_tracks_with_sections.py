@@ -2,24 +2,24 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from OTAnalytics.application.use_cases.section_repository import (
+from traffic_counter.application.use_cases.section_repository import (
     GetSectionsById,
     RemoveSection,
 )
-from OTAnalytics.application.use_cases.track_repository import (
+from traffic_counter.application.use_cases.track_repository import (
     AddAllTracks,
     GetTracksWithoutSingleDetections,
     RemoveTracks,
 )
-from OTAnalytics.domain.section import (
+from traffic_counter.domain.section import (
     Area,
     LineSection,
     SectionId,
     SectionRepositoryEvent,
     SectionType,
 )
-from OTAnalytics.domain.track import Track, TrackId
-from OTAnalytics.plugin_intersect.simple.cut_tracks_with_sections import (
+from traffic_counter.domain.track import Track, TrackId
+from traffic_counter.plugin_intersect.simple.cut_tracks_with_sections import (
     SimpleCutTracksIntersectingSection,
 )
 

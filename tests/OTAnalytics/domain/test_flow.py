@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from OTAnalytics.domain.flow import Flow, FlowChangedObserver, FlowId, FlowRepository
-from OTAnalytics.domain.section import Section, SectionId
+from traffic_counter.domain.flow import Flow, FlowChangedObserver, FlowId, FlowRepository
+from traffic_counter.domain.section import Section, SectionId
 
 
 @pytest.fixture

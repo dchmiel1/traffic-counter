@@ -25,6 +25,7 @@ from traffic_counter.plugin_ui.customtkinter_gui.frame_track_plotting import (
     FrameTrackPlotting,
 )
 from traffic_counter.plugin_ui.customtkinter_gui.frame_tracks import TracksFrame
+from traffic_counter.plugin_ui.customtkinter_gui.frame_video_player import FrameVideoPlayer
 from traffic_counter.plugin_ui.customtkinter_gui.frame_videos import FrameVideos
 from traffic_counter.plugin_ui.customtkinter_gui.helpers import get_widget_position
 from traffic_counter.plugin_ui.customtkinter_gui.messagebox import InfoBox
@@ -117,14 +118,28 @@ class FrameContent(CTkFrame):
             master=self,
             viewmodel=self._viewmodel,
         )
+        self._frame_vid_player = FrameVideoPlayer(master=self)
+
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1, minsize=400)
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._frame_track_plotting.grid(row=0, column=1, pady=PADY, sticky=STICKY)
         self._frame_filter.grid(row=1, column=0, pady=PADY, sticky=STICKY)
+        self.set_player()
 
+    def set_player(self):
+        self.grid_rowconfigure(0, weight=5)
+        self.grid_columnconfigure(0, weight=5)
+        self._frame_canvas.grid_forget()
+        self._frame_vid_player.grid(row=0, column=0, pady=PADY, sticky=STICKY)
+
+    def set_canvas(self):
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_columnconfigure(0, weight=0)
+        self._frame_vid_player.grid_forget()
+        self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
 
 class FrameNavigation(EmbeddedCTkScrollableFrame):
     def __init__(self, master: Any, viewmodel: ViewModel, **kwargs: Any) -> None:

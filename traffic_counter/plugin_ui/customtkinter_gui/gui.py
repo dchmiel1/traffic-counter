@@ -24,6 +24,9 @@ from traffic_counter.plugin_ui.customtkinter_gui.frame_project import TabviewPro
 from traffic_counter.plugin_ui.customtkinter_gui.frame_track_plotting import (
     FrameTrackPlotting,
 )
+from traffic_counter.plugin_ui.customtkinter_gui.frame_input_files import (
+    TabviewFiles,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.frame_start import TabviewStart
 from traffic_counter.plugin_ui.customtkinter_gui.frame_tracks import TracksFrame
 from traffic_counter.plugin_ui.customtkinter_gui.frame_video_player import (
@@ -161,6 +164,7 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
             master=self, viewmodel=self._viewmodel
         )
         self._frame_start = TabviewStart(master=self, viewmodel=self._viewmodel)
+        self._tabview_input_files = TabviewFiles(master=self, viewmodel=self._viewmodel)
         self._tabview_configuration = TabviewConfiguration(
             master=self, viewmodel=self._viewmodel
         )

@@ -41,18 +41,19 @@ class LoadTrackFiles:
         Args:
             files (Path): files in ottrk format.
         """
-        raised_exceptions: list[Exception] = []
+        # raised_exceptions: list[Exception] = []
         for file in self._progressbar(
             files, unit="files", description="Processed ottrk files: "
         ):
-            try:
+            # try:
                 self.load(file)
-            except Exception as cause:
-                raised_exceptions.append(cause)
-        if raised_exceptions:
-            raise ExceptionGroup(
-                "Errors occurred while loading the track files:", raised_exceptions
-            )
+            # except Exception as cause:
+            #     raise cause
+                # raised_exceptions.append(cause)
+        # if raised_exceptions:
+        #     raise ExceptionGroup(
+        #         "Errors occurred while loading the track files:", raised_exceptions
+        #     )
 
     def load(self, file: Path) -> None:
         """

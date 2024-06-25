@@ -120,9 +120,9 @@ class FrameContent(CTkFrame):
         )
         self._frame_vid_player = FrameVideoPlayer(master=self)
 
-        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(0, weight=5)
         self.grid_rowconfigure(1, weight=1)
-        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(0, weight=5)
         self.grid_columnconfigure(1, weight=1, minsize=400)
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._frame_track_plotting.grid(row=0, column=1, pady=PADY, sticky=STICKY)

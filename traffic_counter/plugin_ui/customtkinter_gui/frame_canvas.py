@@ -9,7 +9,7 @@ from traffic_counter.adapter_ui.abstract_canvas import AbstractCanvas
 from traffic_counter.adapter_ui.abstract_frame_canvas import AbstractFrameCanvas
 from traffic_counter.adapter_ui.view_model import ViewModel
 from traffic_counter.application.logger import logger
-from traffic_counter.domain.track import TrackImage
+from traffic_counter.domain.track import TrackImage, PilImage
 from traffic_counter.plugin_ui.customtkinter_gui.canvas_observer import (
     CanvasObserver,
     EventHandler,
@@ -57,25 +57,37 @@ class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
         self._get_widgets()
         self._place_widgets()
         self.introduce_to_viewmodel()
+        self._current_image = None
 
     def introduce_to_viewmodel(self) -> None:
         self._viewmodel.set_frame_canvas(self)
+
+    def on_window_resize(self, event):
+        diff = abs(self.canvas_background._current_image.width() - self.winfo_width())
+        if self._current_image and diff > 20:
+            self.add_image(DisplayableImage(self._current_image), layer="background")
 
     def _get_widgets(self) -> None:
         self.canvas_background = CanvasBackground(
             master=self, viewmodel=self._viewmodel
         )
+        self.canvas_background.bind("<Configure>", self.on_window_resize)
 
     def _place_widgets(self) -> None:
-        PADY = 10
-        self.canvas_background.grid(
-            row=2, column=0, padx=PADX, pady=PADY, sticky=STICKY
-        )
+        self.canvas_background.pack(expand=True)
 
     def update_background(self, image: TrackImage) -> None:
+        self._current_image = image
         self.add_image(DisplayableImage(image), layer="background")
 
+    def resize_image(self, image: DisplayableImage):
+        image_width = self.winfo_width()
+        factor = image_width / image.width()
+        image = image._image.as_image().resize(((int)(image.width() * factor), (int)(image.height() * factor)))
+        return DisplayableImage(PilImage(image))
+
     def add_image(self, image: DisplayableImage, layer: str) -> None:
+        image = self.resize_image(image)
         self.canvas_background.add_image(image, layer)
 
     def clear_image(self) -> None:

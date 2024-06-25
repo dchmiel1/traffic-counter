@@ -24,8 +24,11 @@ from traffic_counter.plugin_ui.customtkinter_gui.frame_project import TabviewPro
 from traffic_counter.plugin_ui.customtkinter_gui.frame_track_plotting import (
     FrameTrackPlotting,
 )
+from traffic_counter.plugin_ui.customtkinter_gui.frame_start import TabviewStart
 from traffic_counter.plugin_ui.customtkinter_gui.frame_tracks import TracksFrame
-from traffic_counter.plugin_ui.customtkinter_gui.frame_video_player import FrameVideoPlayer
+from traffic_counter.plugin_ui.customtkinter_gui.frame_video_player import (
+    FrameVideoPlayer,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.frame_videos import FrameVideos
 from traffic_counter.plugin_ui.customtkinter_gui.helpers import get_widget_position
 from traffic_counter.plugin_ui.customtkinter_gui.messagebox import InfoBox
@@ -127,7 +130,7 @@ class FrameContent(CTkFrame):
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._frame_track_plotting.grid(row=0, column=1, pady=PADY, sticky=STICKY)
         self._frame_filter.grid(row=1, column=0, pady=PADY, sticky=STICKY)
-        self.set_player()
+        # self.set_player()
 
     def set_player(self):
         self.grid_rowconfigure(0, weight=5)
@@ -140,6 +143,7 @@ class FrameContent(CTkFrame):
         self.grid_columnconfigure(0, weight=0)
         self._frame_vid_player.grid_forget()
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
+
 
 class FrameNavigation(EmbeddedCTkScrollableFrame):
     def __init__(self, master: Any, viewmodel: ViewModel, **kwargs: Any) -> None:
@@ -156,6 +160,7 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
         self._tabview_input_files = TabviewInputFiles(
             master=self, viewmodel=self._viewmodel
         )
+        self._frame_start = TabviewStart(master=self, viewmodel=self._viewmodel)
         self._tabview_configuration = TabviewConfiguration(
             master=self, viewmodel=self._viewmodel
         )
@@ -164,7 +169,7 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
     def _place_widgets(self) -> None:
         self.grid_rowconfigure((1, 2), weight=1)
         self.grid_columnconfigure((0, 3), weight=0)
-        self._frame_project.grid(row=0, column=0, pady=PADY, sticky=STICKY)
+        self._frame_start.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._tabview_input_files.grid(row=1, column=0, pady=PADY, sticky=STICKY)
         self._tabview_configuration.grid(row=2, column=0, pady=PADY, sticky=STICKY)
         self._frame_analysis.grid(row=3, column=0, pady=PADY, sticky=STICKY)

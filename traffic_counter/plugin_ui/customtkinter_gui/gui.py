@@ -197,14 +197,14 @@ class TabviewContent(CustomCTkTabview):
         self.frame_tracks = FrameContent(
             master=self.tab(CANVAS), viewmodel=self._viewmodel, layers=self._layers
         )
-        self.add(FILES)
-        self.frame_track_files = FrameFiles(
-            master=self.tab(FILES), viewmodel=self._viewmodel
-        )
+        # self.add(FILES)
+        # self.frame_track_files = FrameFiles(
+            # master=self.tab(FILES), viewmodel=self._viewmodel
+        # )
 
     def _place_widgets(self) -> None:
         self.frame_tracks.pack(fill=tkinter.BOTH, expand=True)
-        self.frame_track_files.pack(fill=tkinter.BOTH, expand=True)
+        # self.frame_track_files.pack(fill=tkinter.BOTH, expand=True)
         self.set(CANVAS)
 
 

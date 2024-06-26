@@ -87,15 +87,23 @@ class TabviewFiles(CustomCTkTabview):
         for i, file in enumerate(self.files):
             file.grid(row=i + 1, column=0, pady=PADY, padx=PADX)
 
-    def update_items(self) -> None:
-        self.files = [
-            self.__to_resource(video) for video in self._viewmodel.get_all_videos()
-        ]
-        for file in self.files:
-            for track in self._viewmodel.get_all_track_files():
+    def _update_video_files(self):
+        curr_files_paths = [file.file_path for file in self.files]
+        for video_file in self._viewmodel.get_all_videos():
+            if video_file.get_path() in curr_files_paths:
+                continue
+            self.files.append(self.__to_resource(video_file))
+
+    def _update_track_files(self):
+        # update track files
+        for track in self._viewmodel.get_all_track_files():
+            for file in self.files:
                 if track.name.rsplit(".")[0] == file.filename.rsplit(".")[0]:
                     file.set_status(True)
 
+    def update_items(self) -> None:
+        self._update_video_files()
+        self._update_track_files()
         self._place_widgets()
 
     def update_selected_items(self, item_ids: list[str]):

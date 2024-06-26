@@ -5,7 +5,7 @@ from PIL import Image
 
 from traffic_counter.adapter_ui.view_model import ViewModel
 from traffic_counter.domain.video import Video
-from customtkinter import CTkLabel, CTkImage
+from customtkinter import CTkLabel, CTkImage, CTkFont
 from traffic_counter.plugin_ui.customtkinter_gui.constants import PADY, PADX, STICKY
 from traffic_counter.plugin_ui.customtkinter_gui.custom_containers import (
     CustomCTkTabview,
@@ -37,28 +37,34 @@ class FrameFile(EmbeddedCTkFrame):
         self._place_widgets()
 
     def _get_widgets(self) -> None:
-        self._label_filename = CTkLabel(master=self, text=self.filename)
-        self._label_filename.bind("<Button-1>", self.select_file)
+        self._label_filename = CTkLabel(master=self, text=self.filename, width=250)
+        self._label_filename.bind("<Button-1>", self.select)
         self._label_status = CTkLabel(master=self, text="")
+        self._label_status.bind("<Button-1>", self.select)
         self.set_status(self.is_analyzed)
 
-    def select_file(self, event=None):
+    def select(self, event=None):
         self._viewmodel.set_selected_videos([self.file_path])
         self.configure(fg_color="#3076FF")
+        self._label_filename.configure(font=CTkFont(weight="bold"))
+
+    def unselect(self):
+        self.configure(fg_color="transparent")
+        self._label_filename.configure(font=CTkFont())
 
     def set_status(self, is_analyzed):
         status_img = CTkImage(
             light_image=Image.open(self.status_img_paths[is_analyzed]),
-            size=(20, 20),
+            size=(15, 15),
         )
         self._label_status.configure(image=status_img)
 
     def _place_widgets(self) -> None:
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=0)
         self.grid_rowconfigure(0, weight=1)
-        self._label_filename.grid(row=0, column=0, padx=0, pady=0, sticky=STICKY)
-        self._label_status.grid(row=0, column=1, padx=0, pady=0, sticky=STICKY)
+        self._label_filename.grid(row=0, column=0, padx=PADX, pady=0, sticky=STICKY)
+        self._label_status.grid(row=0, column=1, padx=PADX, pady=0, sticky=STICKY)
 
 
 class TabviewFiles(CustomCTkTabview):
@@ -84,8 +90,10 @@ class TabviewFiles(CustomCTkTabview):
         self.add(self._title)
 
     def _place_widgets(self) -> None:
+        self.grid_columnconfigure(0, weight=1)
         for i, file in enumerate(self.files):
-            file.grid(row=i + 1, column=0, pady=PADY, padx=PADX)
+            file.grid(row=i + 1, column=0, pady=0, padx=PADX, sticky=STICKY)
+            file.bind("<Button-1>", file.select)
 
     def _update_video_files(self):
         curr_files_paths = [file.file_path for file in self.files]
@@ -110,11 +118,11 @@ class TabviewFiles(CustomCTkTabview):
         self.unselect_all()
         for file in self.files:
             if str(file.file_path) == item_ids[0]:
-                file.select_file()
+                file.select()
 
     def unselect_all(self):
         for file in self.files:
-            file.configure(fg_color="transparent")
+            file.unselect()
 
     def __to_resource(self, video: Video) -> FrameFile:
         return FrameFile(

@@ -94,6 +94,10 @@ class ViewModel(ABC):
         pass
 
     @abstractmethod
+    def set_video_player(self, treeview: AbstractTreeviewInterface) -> None:
+        pass
+
+    @abstractmethod
     def set_selected_videos(self, video: list[str]) -> None:
         pass
 

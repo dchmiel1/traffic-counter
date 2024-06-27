@@ -199,6 +199,7 @@ class DummyViewModel(
         self._frame_track_plotting: Optional[AbstractFrameTrackPlotting] = None
         self._treeview_sections: Optional[AbstractTreeviewInterface]
         self._treeview_flows: Optional[AbstractTreeviewInterface]
+        self._video_player: Optional[AbstractTreeviewInterface]
         self._new_section: dict = {}
 
     def notify_videos(self, videos: list[Video]) -> None:
@@ -391,6 +392,7 @@ class DummyViewModel(
         self._selected_videos = current_paths
         if self._treeview_videos is None:
             raise MissingInjectedInstanceError(type(self._treeview_sections).__name__)
+        self._video_player.update_selected_items(current_paths)
         self._treeview_videos.update_selected_items(current_paths)
         self._update_enabled_video_buttons()
 
@@ -407,6 +409,9 @@ class DummyViewModel(
 
     def remove_videos(self) -> None:
         self._application.remove_videos()
+
+    def set_video_player(self, video_player: AbstractTreeviewInterface):
+        self._video_player = video_player
 
     def set_treeview_videos(self, treeview: AbstractTreeviewInterface) -> None:
         self._treeview_videos = treeview

@@ -37,7 +37,7 @@ from traffic_counter.plugin_ui.customtkinter_gui.helpers import get_widget_posit
 from traffic_counter.plugin_ui.customtkinter_gui.messagebox import InfoBox
 
 CANVAS: str = "Canvas"
-FILES: str = "Files"
+VIDEO: str = "Video"
 
 
 class ModifiedCTk(AbstractMainWindow, CTk):
@@ -124,7 +124,6 @@ class FrameContent(CTkFrame):
             master=self,
             viewmodel=self._viewmodel,
         )
-        self._frame_vid_player = FrameVideoPlayer(master=self)
 
         self.grid_rowconfigure(0, weight=5)
         self.grid_rowconfigure(1, weight=1)
@@ -133,19 +132,6 @@ class FrameContent(CTkFrame):
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._frame_track_plotting.grid(row=0, column=1, pady=PADY, sticky=STICKY)
         self._frame_filter.grid(row=1, column=0, pady=PADY, sticky=STICKY)
-        # self.set_player()
-
-    def set_player(self):
-        self.grid_rowconfigure(0, weight=5)
-        self.grid_columnconfigure(0, weight=5)
-        self._frame_canvas.grid_forget()
-        self._frame_vid_player.grid(row=0, column=0, pady=PADY, sticky=STICKY)
-
-    def set_canvas(self):
-        self.grid_rowconfigure(0, weight=0)
-        self.grid_columnconfigure(0, weight=0)
-        self._frame_vid_player.grid_forget()
-        self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
 
 
 class FrameNavigation(EmbeddedCTkScrollableFrame):
@@ -197,14 +183,14 @@ class TabviewContent(CustomCTkTabview):
         self.frame_tracks = FrameContent(
             master=self.tab(CANVAS), viewmodel=self._viewmodel, layers=self._layers
         )
-        # self.add(FILES)
-        # self.frame_track_files = FrameFiles(
-            # master=self.tab(FILES), viewmodel=self._viewmodel
-        # )
+        self.add(VIDEO)
+        self.frame_video = FrameVideoPlayer(
+            master=self.tab(VIDEO), viewmodel=self._viewmodel
+        )
 
     def _place_widgets(self) -> None:
         self.frame_tracks.pack(fill=tkinter.BOTH, expand=True)
-        # self.frame_track_files.pack(fill=tkinter.BOTH, expand=True)
+        self.frame_video.pack(fill=tkinter.BOTH, expand=True)
         self.set(CANVAS)
 
 

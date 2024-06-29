@@ -19,11 +19,29 @@ class VideoDisplay(CTkLabel):
         self.delay_ms = 10
         self.vid = None
 
+    def __del__(self):
+        if self.vid.isOpened():
+            self.vid.release()
+
+    def _calculate_display_size(self):
+        if not self.vid:
+            return None
+
+        if (self.winfo_width(), self.winfo_height()) == (1, 1):
+            return 1, 1
+
+        width = self.vid.get(cv2.CAP_PROP_FRAME_WIDTH)
+        height = self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        factor_w = self.winfo_width() / width
+        factor_h = self.winfo_height() / height
+        factor = min(factor_w, factor_h)
+        return int(width * factor), int(height * factor)
+
     def _get_frame(self):
         if self.vid.isOpened():
-            ret, frame = self.vid.read()
+            ret, self.frame = self.vid.read()
             if ret:
-                frame = cv2.resize(frame, (self.winfo_width(), self.winfo_height()))
+                frame = cv2.resize(self.frame, self._calculate_display_size())
                 return (ret, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             else:
                 self.pause()
@@ -34,26 +52,28 @@ class VideoDisplay(CTkLabel):
         else:
             return (ret, None)
 
+    def _display_frame(self, frame):
+        self.image = PIL.Image.fromarray(frame)
+        self.photo = PIL.ImageTk.PhotoImage(image=self.image)
+        self.configure(image=self.photo)
+        # self.create_image(0, 0, image=self.photo, anchor=tkinter.NW)
+        if self.progress_slider_updater:
+            self.progress_slider_updater(self.vid.get(cv2.CAP_PROP_POS_FRAMES))
+
     def _update_widget(self):
         if self.paused:
             return
 
         ret, frame = self._get_frame()
-
         if ret:
-            self.image = PIL.Image.fromarray(frame)
-            self.photo = PIL.ImageTk.PhotoImage(image=self.image)
-            self.configure(image=self.photo)
-            if self.progress_slider_updater:
-                self.progress_slider_updater(self.vid.get(cv2.CAP_PROP_POS_FRAMES))
-            # self.create_image(0, 0, image=self.photo, anchor=tkinter.NW)
+            self._display_frame(frame)
 
         self.master.after(self.delay_ms, self._update_widget)
 
     def _display_one_frame(self):
-        self.paused = False
-        self._update_widget()
-        self.paused = True
+        ret, frame = self._get_frame()
+        if ret:
+            self._display_frame(frame)
 
     def pause(self):
         self.paused = True
@@ -89,9 +109,11 @@ class VideoDisplay(CTkLabel):
     def set_video_ended_handler(self, handler):
         self.video_ended_handler = handler
 
-    def __del__(self):
-        if self.vid.isOpened():
-            self.vid.release()
+    def on_window_resize(self, event):
+        if self.vid and self.frame is not None:
+            frame = cv2.resize(self.frame, self._calculate_display_size())
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            self._display_frame(frame)
 
 
 class FrameVideoPlayer(EmbeddedCTkFrame):
@@ -157,6 +179,7 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         self.vid_player.set_progress_slider_initializer(self._init_slider)
         self.vid_player.set_progress_slider_updater(self._update_slider)
         self.vid_player.set_video_ended_handler(self._video_ended_handler)
+        self.vid_player.bind("<Configure>", self.vid_player.on_window_resize)
         self.progress_slider.set(-1)
 
     def update_items(self) -> None:

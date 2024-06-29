@@ -231,6 +231,7 @@ class DummyViewModel(
         if self._treeview_files is None:
             raise MissingInjectedInstanceError(type(self._treeview_files).__name__)
         self._treeview_files.update_items()
+        self._frame_content.update_items()
         self._update_enabled_buttons()
 
     def _update_enabled_buttons(self) -> None:

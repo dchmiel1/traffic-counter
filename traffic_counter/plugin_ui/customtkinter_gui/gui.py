@@ -156,13 +156,14 @@ class FrameContent(CTkFrame):
         self._viewmodel.set_frame_content(self)
 
     def update_items(self) -> None:
-        pass
+        if self.selected_video:
+            self.update_selected_items([self.selected_video])
 
     def update_selected_items(self, item_ids: list[str]):
-        selected_video = item_ids[0]
+        self.selected_video = item_ids[0]
         track_files = self._viewmodel.get_all_track_files()
         for track_file in track_files:
-            if str(track_file).rsplit(".")[0] == selected_video.rsplit(".")[0]:
+            if str(track_file).rsplit(".")[0] == self.selected_video.rsplit(".")[0]:
                 self.show_widgets(True)
                 return
         self.show_widgets(False)

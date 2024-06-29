@@ -1,7 +1,14 @@
 import tkinter
 from typing import Any, Sequence
 
-from customtkinter import CTk, CTkFrame, set_appearance_mode, set_default_color_theme
+from customtkinter import (
+    CTk,
+    CTkButton,
+    CTkFrame,
+    CTkFont,
+    set_appearance_mode,
+    set_default_color_theme,
+)
 
 from traffic_counter.adapter_ui.abstract_main_window import AbstractMainWindow
 from traffic_counter.adapter_ui.view_model import ViewModel
@@ -113,25 +120,74 @@ class FrameContent(CTkFrame):
     ) -> None:
         super().__init__(master=master, **kwargs)
         self._viewmodel = viewmodel
+        self._layers = layers
+        self._introduce_to_viewmodel()
+        self._get_widgets()
+        self._place_widgets()
 
+    def _get_widgets(self):
         self._frame_track_plotting = FrameTrackPlotting(
             master=self,
-            viewmodel=viewmodel,
-            layers=layers,
+            viewmodel=self._viewmodel,
+            layers=self._layers,
         )
         self._frame_filter = FrameFilter(master=self, viewmodel=self._viewmodel)
         self._frame_canvas = FrameCanvas(
             master=self,
             viewmodel=self._viewmodel,
         )
+        self._analyze_button = CTkButton(
+            master=self,
+            text="Analyze",
+            command=self._viewmodel.analyze,
+            width=350,
+            height=80,
+            font=CTkFont(weight="bold", size=20),
+        )
 
+    def _place_widgets(self):
         self.grid_rowconfigure(0, weight=5)
         self.grid_rowconfigure(1, weight=1)
         self.grid_columnconfigure(0, weight=5)
         self.grid_columnconfigure(1, weight=1, minsize=400)
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
+
+    def _introduce_to_viewmodel(self):
+        self._viewmodel.set_frame_content(self)
+
+    def update_items(self) -> None:
+        pass
+
+    def update_selected_items(self, item_ids: list[str]):
+        selected_video = item_ids[0]
+        track_files = self._viewmodel.get_all_track_files()
+        for track_file in track_files:
+            if str(track_file).rsplit(".")[0] == selected_video.rsplit(".")[0]:
+                self.show_widgets(True)
+                return
+        self.show_widgets(False)
+
+    def set_analyzed(self):
+        self.grid_columnconfigure(1, weight=1, minsize=400)
+
+        self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._frame_track_plotting.grid(row=0, column=1, pady=PADY, sticky=STICKY)
         self._frame_filter.grid(row=1, column=0, pady=PADY, sticky=STICKY)
+        self._analyze_button.grid_forget()
+
+    def set_not_analyzed(self):
+        self.grid_columnconfigure(1, weight=1, minsize=0)
+
+        self._frame_canvas.grid(row=0, column=0, padx=PADX*5, pady=PADY*5, sticky=STICKY)
+        self._frame_track_plotting.grid_forget()
+        self._frame_filter.grid_forget()
+        self._analyze_button.grid(row=1, column=0, pady=PADY, padx=PADX)
+
+    def show_widgets(self, is_analyzed):
+        if is_analyzed:
+            self.set_analyzed()
+        else:
+            self.set_not_analyzed()
 
 
 class FrameNavigation(EmbeddedCTkScrollableFrame):

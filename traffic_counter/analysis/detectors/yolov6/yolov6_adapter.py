@@ -1,7 +1,7 @@
 import numpy as np
 
-from traffic_counter.abstract_detector_adapter import DetectorAdapter
-from traffic_counter.detectors.yolov6.yolov6.core.inferer import (
+from traffic_counter.analysis.detectors.abstract_detector_adapter import DetectorAdapter
+from traffic_counter.analysis.detectors.yolov6.yolov6.core.inferer import (
     Inferer as YOLOv6Inferer,
 )
 
@@ -24,7 +24,7 @@ class YOLOv6Adapter(DetectorAdapter):
             None,
             weights=self.weights_dir + weights,
             device=device,
-            yaml="traffic_counter/detectors/yolov6/data/coco.yaml",
+            yaml="traffic_counter/analysis/detectors/yolov6/data/coco.yaml",
             img_size=[640, 640],
             half=True,
         )

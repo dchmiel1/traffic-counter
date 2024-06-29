@@ -155,16 +155,17 @@ class TracksExporter(ABC):
         self.tracker = tracker
         self.video_file = video_file
         self.tracking_records = []
-        self.ottrk = OTTRK_INIT
         self.classes = self.ottrk["metadata"]["detection"]["model"]["classes"]
 
     @abstractmethod
     def update():
         pass
 
-    def save_ottrk(self):
+    @property
+    def ottrk(self):
+        ottrk = OTTRK_INIT
         for r in self.tracking_records:
-            self.ottrk["data"]["detections"].append(
+            ottrk["data"]["detections"].append(
                 {
                     "class": self.classes[str(int(r.cls))],
                     "confidence": r.conf,
@@ -177,14 +178,18 @@ class TracksExporter(ABC):
                     "track-id": r.track_id,
                 }
             )
+        return ottrk
+
+    def save_ottrk(self):
+        ottrk = self.ottrk
 
         # TODO
         filename = self.video_file.rsplit(".")[0] + ".ottrk"
         with open("_" + filename, "w") as f:
-            f.write(json.dumps(self.ottrk, indent=4))
+            f.write(json.dumps(ottrk, indent=4))
 
         with bz2.open(filename, "wt", encoding="UTF-8") as f:
-            f.write(json.dumps(self.ottrk))
+            f.write(json.dumps(ottrk))
 
     def save_mp4():
         pass

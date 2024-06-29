@@ -214,7 +214,7 @@ class BoTSORTTracksExporter(TracksExporter):
             self.tracking_records.append(tracking_record)
 
 
-class SMILEtrackTracksExporter(TracksExporter):
+class SMILETrackTracksExporter(TracksExporter):
     def update(self, frame_id):
         for tr in self.tracker.tracked_stracks:
             if not tr.history_observations:

@@ -577,13 +577,6 @@ class OTAnalyticsApplication:
     def get_track_repository_size(self) -> int:
         return self._track_repository_size.get()
 
-    # TODO:
-    def analyze(self, detector: str, tracker: str) -> None:
-        pass
-        # if self._datastore._event_repository.is_empty():
-        #     self.create_events()
-        # self._datastore.export_event_list_file(file, event_list_exporter)
-
 
 class MissingTracksError(Exception):
     pass

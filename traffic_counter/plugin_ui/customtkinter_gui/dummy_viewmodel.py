@@ -2,6 +2,7 @@ import contextlib
 import functools
 from datetime import datetime
 from pathlib import Path
+from threading import Thread
 from time import sleep
 from tkinter.filedialog import askopenfilename, askopenfilenames
 from typing import Any, Iterable, Optional
@@ -34,6 +35,7 @@ from traffic_counter.adapter_ui.view_model import (
     MissingCoordinate,
     ViewModel,
 )
+from traffic_counter.analysis.analyze import analyze
 from traffic_counter.application.analysis.traffic_counting_specification import (
     CountingSpecificationDto,
 )
@@ -122,6 +124,9 @@ from traffic_counter.plugin_ui.customtkinter_gui.toplevel_export_counts import (
     START,
     CancelExportCounts,
     ToplevelExportCounts,
+)
+from traffic_counter.plugin_ui.customtkinter_gui.analyze_progress_bar import (
+    AnalyzeProgressBarWindow
 )
 from traffic_counter.plugin_ui.customtkinter_gui.analyze_window import (
     AnalyzeWindow,
@@ -1621,6 +1626,9 @@ class DummyViewModel(
     def set_analysis_frame(self, frame: AbstractFrame) -> None:
         self._frame_analysis = frame
 
+    def handle_ottrk(self, ottrk):
+        print("received new ottrk file")
+
     def analyze(self) -> None:
         try:
             detector, tracker = AnalyzeWindow(
@@ -1631,9 +1639,18 @@ class DummyViewModel(
                 ),
             ).get_data()
 
+            progress_bar = AnalyzeProgressBarWindow(title="Processing video...", initial_position=(
+                    self._frame_content.winfo_screenwidth() // 2,
+                    self._frame_content.winfo_screenheight() // 2,
+                ),)
+
             logger().info(
                 f"Performing analysis using {detector} detector and {tracker}"
             )
-            self._application.analyze(detector, tracker)
+            thread = Thread(
+            target=analyze,
+                args=(self._selected_videos[0], detector, tracker, progress_bar, self.handle_ottrk),
+            )
+            thread.start()
         except CancelAnalysis:
             logger().info("User canceled analysis")

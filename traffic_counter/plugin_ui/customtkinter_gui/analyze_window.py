@@ -2,6 +2,15 @@ from typing import Any
 
 from customtkinter import CTkLabel, CTkCheckBox, CTkFrame
 
+from traffic_counter.analysis.analyze import (
+    BOT_SORT_NAME,
+    CO_DETR_NAME,
+    DEEP_OC_SORT_NAME,
+    RT_DETR_NAME,
+    SMILETRACK_NAME,
+    YOLOV6_NAME,
+)
+
 from traffic_counter.plugin_ui.customtkinter_gui.constants import PADX, PADY, STICKY
 from traffic_counter.plugin_ui.customtkinter_gui.toplevel_template import (
     FrameContent,
@@ -56,28 +65,31 @@ class FrameSetAlgorithms(CTkFrame):
     def _get_widgets(self) -> None:
         self.label_detector = CTkLabel(master=self, text="Detector")
         self.checkbox_yolo = CTkCheckBox(
-            master=self, text="YOLO", command=self.check_yolo, corner_radius=50
+            master=self, text=YOLOV6_NAME, command=self.check_yolo, corner_radius=50
         )
         self.checkbox_rtdetr = CTkCheckBox(
-            master=self, text="RT-DETR", command=self.check_rt_detr, corner_radius=50
+            master=self, text=RT_DETR_NAME, command=self.check_rt_detr, corner_radius=50
         )
         self.checkbox_codetr = CTkCheckBox(
-            master=self, text="CO-DETR", command=self.check_co_detr, corner_radius=50
+            master=self, text=CO_DETR_NAME, command=self.check_co_detr, corner_radius=50
         )
 
         self.label_tracker = CTkLabel(master=self, text="Tracker")
         self.checkbox_botsort = CTkCheckBox(
-            master=self, text="BoT-SORT", command=self.check_bot_sort, corner_radius=50
+            master=self,
+            text=BOT_SORT_NAME,
+            command=self.check_bot_sort,
+            corner_radius=50,
         )
         self.checkbox_smiletrack = CTkCheckBox(
             master=self,
-            text="SmileTrack",
+            text=SMILETRACK_NAME,
             command=self.check_smiletrack,
             corner_radius=50,
         )
         self.checkbox_deep_oc_sort = CTkCheckBox(
             master=self,
-            text="DeepOCSORT",
+            text=DEEP_OC_SORT_NAME,
             command=self.check_deep_oc_sort,
             corner_radius=50,
         )

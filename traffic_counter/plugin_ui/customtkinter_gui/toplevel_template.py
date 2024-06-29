@@ -59,7 +59,7 @@ class ToplevelTemplate(CTkToplevel, ABC):
         self._get_frame_footer()
 
     def _place_widgets(self) -> None:
-        self._frame_content.pack(padx=PADX, pady=PADY)
+        self._frame_content.pack(padx=PADX*2, pady=PADY*2)
         self._frame_footer.pack(padx=PADX, pady=PADY)
 
     def _set_ok_cancel_bindings(self) -> None:

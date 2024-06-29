@@ -16,7 +16,9 @@ from traffic_counter.adapter_ui.abstract_frame_track_plotting import (
 )
 from traffic_counter.adapter_ui.abstract_frame_tracks import AbstractFrameTracks
 from traffic_counter.adapter_ui.abstract_main_window import AbstractMainWindow
-from traffic_counter.adapter_ui.abstract_treeview_interface import AbstractTreeviewInterface
+from traffic_counter.adapter_ui.abstract_treeview_interface import (
+    AbstractTreeviewInterface,
+)
 from traffic_counter.adapter_ui.default_values import (
     DATETIME_FORMAT,
     RELATIVE_SECTION_OFFSET,
@@ -79,9 +81,16 @@ from traffic_counter.domain.section import (
     SectionRepositoryEvent,
 )
 from traffic_counter.domain.track import TrackImage
-from traffic_counter.domain.track_repository import TrackListObserver, TrackRepositoryEvent
+from traffic_counter.domain.track_repository import (
+    TrackListObserver,
+    TrackRepositoryEvent,
+)
 from traffic_counter.domain.types import EventType
-from traffic_counter.domain.video import DifferentDrivesException, Video, VideoListObserver
+from traffic_counter.domain.video import (
+    DifferentDrivesException,
+    Video,
+    VideoListObserver,
+)
 from traffic_counter.plugin_ui.customtkinter_gui import toplevel_export_events
 from traffic_counter.plugin_ui.customtkinter_gui.frame_sections import COLUMN_SECTION
 from traffic_counter.plugin_ui.customtkinter_gui.helpers import ask_for_save_file_path
@@ -92,7 +101,10 @@ from traffic_counter.plugin_ui.customtkinter_gui.line_section import (
     SectionGeometryEditor,
     SectionPainter,
 )
-from traffic_counter.plugin_ui.customtkinter_gui.messagebox import InfoBox, MinimalInfoBox
+from traffic_counter.plugin_ui.customtkinter_gui.messagebox import (
+    InfoBox,
+    MinimalInfoBox,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.style import (
     ARROW_STYLE,
     COLOR_ORANGE,
@@ -111,6 +123,10 @@ from traffic_counter.plugin_ui.customtkinter_gui.toplevel_export_counts import (
     CancelExportCounts,
     ToplevelExportCounts,
 )
+from traffic_counter.plugin_ui.customtkinter_gui.analyze_window import (
+    AnalyzeWindow,
+    CancelAnalysis,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.toplevel_export_events import (
     CancelExportEvents,
     ToplevelExportEvents,
@@ -123,7 +139,9 @@ from traffic_counter.plugin_ui.customtkinter_gui.toplevel_flows import (
     START_SECTION,
     ToplevelFlows,
 )
-from traffic_counter.plugin_ui.customtkinter_gui.toplevel_sections import ToplevelSections
+from traffic_counter.plugin_ui.customtkinter_gui.toplevel_sections import (
+    ToplevelSections,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.treeview_template import ColumnResource
 
 MESSAGE_CONFIGURATION_NOT_SAVED = "The configuration has not been saved.\n"
@@ -200,6 +218,7 @@ class DummyViewModel(
         self._treeview_sections: Optional[AbstractTreeviewInterface]
         self._treeview_flows: Optional[AbstractTreeviewInterface]
         self._video_player: Optional[AbstractTreeviewInterface]
+        self._frame_content: Optional[AbstractTreeviewInterface]
         self._new_section: dict = {}
 
     def notify_videos(self, videos: list[Video]) -> None:
@@ -393,6 +412,7 @@ class DummyViewModel(
         if self._treeview_videos is None:
             raise MissingInjectedInstanceError(type(self._treeview_sections).__name__)
         self._video_player.update_selected_items(current_paths)
+        self._frame_content.update_selected_items(current_paths)
         self._treeview_videos.update_selected_items(current_paths)
         self._update_enabled_video_buttons()
 
@@ -412,6 +432,9 @@ class DummyViewModel(
 
     def set_video_player(self, video_player: AbstractTreeviewInterface):
         self._video_player = video_player
+
+    def set_frame_content(self, frame_content: AbstractTreeviewInterface):
+        self._frame_content = frame_content
 
     def set_treeview_videos(self, treeview: AbstractTreeviewInterface) -> None:
         self._treeview_videos = treeview
@@ -1596,3 +1619,20 @@ class DummyViewModel(
 
     def set_analysis_frame(self, frame: AbstractFrame) -> None:
         self._frame_analysis = frame
+
+    def analyze(self) -> None:
+        try:
+            detector, tracker = AnalyzeWindow(
+                title="Analyze video",
+                initial_position=(
+                    self._frame_content.winfo_screenwidth() // 2,
+                    self._frame_content.winfo_screenheight() // 2,
+                ),
+            ).get_data()
+
+            logger().info(
+                f"Performing analysis using {detector} detector and {tracker}"
+            )
+            self._application.analyze(detector, tracker)
+        except CancelAnalysis:
+            logger().info("User canceled analysis")

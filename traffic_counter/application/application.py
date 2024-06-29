@@ -41,7 +41,12 @@ from traffic_counter.application.use_cases.track_repository import (
 from traffic_counter.application.use_cases.update_project import ProjectUpdater
 from traffic_counter.domain.date import DateRange
 from traffic_counter.domain.filter import FilterElement, FilterElementSettingRestorer
-from traffic_counter.domain.flow import Flow, FlowChangedObserver, FlowId, FlowListObserver
+from traffic_counter.domain.flow import (
+    Flow,
+    FlowChangedObserver,
+    FlowId,
+    FlowListObserver,
+)
 from traffic_counter.domain.geometry import RelativeOffsetCoordinate
 from traffic_counter.domain.section import (
     Section,
@@ -571,6 +576,13 @@ class OTAnalyticsApplication:
 
     def get_track_repository_size(self) -> int:
         return self._track_repository_size.get()
+
+    # TODO:
+    def analyze(self, detector: str, tracker: str) -> None:
+        pass
+        # if self._datastore._event_repository.is_empty():
+        #     self.create_events()
+        # self._datastore.export_event_list_file(file, event_list_exporter)
 
 
 class MissingTracksError(Exception):

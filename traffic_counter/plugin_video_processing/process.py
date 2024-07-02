@@ -14,8 +14,8 @@ from traffic_counter.plugin_video_processing.detectors.yolov6.yolov6_adapter imp
 from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
     DetectorAdapter,
 )
-from traffic_counter.plugin_video_processing.detectors.rt_detr import (
-    rt_detr_adapter as RTDETR,
+from traffic_counter.plugin_video_processing.detectors.rt_detr.rt_detr_adapter import (
+    RTDETRAdapter as RTDETR,
 )
 from traffic_counter.plugin_video_processing.trackers.smiletrack.smiletrack import (
     SMILEtrack,

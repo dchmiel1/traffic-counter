@@ -164,6 +164,7 @@ class TracksExporter(ABC):
     @property
     def ottrk(self):
         ottrk = OTTRK_INIT
+        ottrk["metadata"]["video"]["filename"] = self.video_file.name.split(".")[0]
         for r in self.tracking_records:
             ottrk["data"]["detections"].append(
                 {

@@ -76,7 +76,7 @@ def get_results_exporter(
 
 
 def analyze(
-    video: str,
+    video_path: Path,
     detector_name: str,
     tracker_name: str,
     progress_bar: AnalyzeProgressBarWindow,
@@ -84,8 +84,8 @@ def analyze(
 ):
     detector = get_detector(detector_name)
     tracker = get_tracker(tracker_name)
-    exporter = get_results_exporter(tracker, video, tracker_name)
-    vid = cv2.VideoCapture(video)
+    exporter = get_results_exporter(tracker, video_path, tracker_name)
+    vid = cv2.VideoCapture(video_path)
     frame_count = vid.get(cv2.CAP_PROP_FRAME_COUNT)
 
     frame_id = 0
@@ -102,4 +102,4 @@ def analyze(
         progress_bar.update(frame_id / frame_count)
 
     vid.release()
-    data_handler(exporter.ottrk)
+    data_handler(video_path, exporter.ottrk)

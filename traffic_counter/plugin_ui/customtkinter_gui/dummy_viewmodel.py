@@ -93,6 +93,7 @@ from traffic_counter.domain.video import (
     Video,
     VideoListObserver,
 )
+from traffic_counter.plugin_parser.json_parser import write_json_bz2
 from traffic_counter.plugin_ui.customtkinter_gui import toplevel_export_events
 from traffic_counter.plugin_ui.customtkinter_gui.frame_sections import COLUMN_SECTION
 from traffic_counter.plugin_ui.customtkinter_gui.helpers import ask_for_save_file_path
@@ -1626,8 +1627,10 @@ class DummyViewModel(
     def set_analysis_frame(self, frame: AbstractFrame) -> None:
         self._frame_analysis = frame
 
-    def handle_ottrk(self, ottrk):
-        print("received new ottrk file")
+    def save_ottrk(self, video_path: Path, ottrk):
+        filename = str(video_path).split(".")[0]
+        write_json_bz2(ottrk, filename + ".ottrk")
+        self._application.add_tracks_of_files(track_files=[Path(filename + ".ottrk")])
 
     def analyze(self) -> None:
         try:
@@ -1649,7 +1652,7 @@ class DummyViewModel(
             )
             thread = Thread(
             target=analyze,
-                args=(self._selected_videos[0], detector, tracker, progress_bar, self.handle_ottrk),
+                args=(self._selected_videos[0], detector, tracker, progress_bar, self.save_ottrk),
             )
             thread.start()
         except CancelAnalysis:

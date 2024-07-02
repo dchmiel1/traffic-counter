@@ -5,23 +5,29 @@ import cv2
 from boxmot import BoTSORT, DeepOCSORT
 from boxmot.trackers.basetracker import BaseTracker
 
-from traffic_counter.analysis.detectors.co_detr.co_detr_adapter import (
+from traffic_counter.plugin_video_processing.detectors.co_detr.co_detr_adapter import (
     CODETRAdapter as CODETR,
 )
-from traffic_counter.analysis.detectors.yolov6.yolov6_adapter import (
+from traffic_counter.plugin_video_processing.detectors.yolov6.yolov6_adapter import (
     YOLOv6Adapter as YOLOv6,
 )
-from traffic_counter.analysis.detectors.abstract_detector_adapter import DetectorAdapter
-from traffic_counter.analysis.detectors.rt_detr import rt_detr_adapter as RTDETR
-from traffic_counter.analysis.trackers.smiletrack.smiletrack import SMILEtrack
-from traffic_counter.analysis.tracks_exporter import (
+from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
+    DetectorAdapter,
+)
+from traffic_counter.plugin_video_processing.detectors.rt_detr import (
+    rt_detr_adapter as RTDETR,
+)
+from traffic_counter.plugin_video_processing.trackers.smiletrack.smiletrack import (
+    SMILEtrack,
+)
+from traffic_counter.plugin_video_processing.tracks_exporter import (
     BoTSORTTracksExporter,
     DeepOCSORTTracksExporter,
     SMILETrackTracksExporter,
     TracksExporter,
 )
-from traffic_counter.plugin_ui.customtkinter_gui.analyze_progress_bar import (
-    AnalyzeProgressBarWindow,
+from traffic_counter.plugin_ui.customtkinter_gui.video_processing_progress_bar_window import (
+    VideoProcessingProgressBarWindow,
 )
 
 CO_DETR_NAME = "CO-DETR"
@@ -75,11 +81,11 @@ def get_results_exporter(
     return exporter_class(tracker, video)
 
 
-def analyze(
+def process(
     video_path: Path,
     detector_name: str,
     tracker_name: str,
-    progress_bar: AnalyzeProgressBarWindow,
+    progress_bar: VideoProcessingProgressBarWindow,
     data_handler: Callable,
 ):
     detector = get_detector(detector_name)

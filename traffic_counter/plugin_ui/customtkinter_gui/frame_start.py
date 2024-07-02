@@ -54,7 +54,7 @@ class FrameStart(EmbeddedCTkFrame):
         )
         self.button_load_track = CTkButton(
             master=self._button_frame,
-            text="Load analyzed track file",
+            text="Load processed track file",
             height=35,
             width=180,
             command=self._viewmodel.load_tracks,

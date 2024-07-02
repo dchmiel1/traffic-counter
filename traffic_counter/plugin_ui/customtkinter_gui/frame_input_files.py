@@ -15,8 +15,8 @@ from traffic_counter.plugin_ui.customtkinter_gui.custom_containers import (
 
 class FrameFile(EmbeddedCTkFrame):
     status_img_paths = {
-        True: Path(r"traffic_counter/assets/is_analyzed.png"),
-        False: Path(r"traffic_counter/assets/is_not_analyzed.png"),
+        True: Path(r"traffic_counter/assets/is_processed.png"),
+        False: Path(r"traffic_counter/assets/is_not_processed.png"),
     }
 
     def __init__(
@@ -24,7 +24,7 @@ class FrameFile(EmbeddedCTkFrame):
         parent,
         viewmodel: ViewModel,
         file_path: str,
-        is_analyzed: bool,
+        is_processed: bool,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -32,7 +32,7 @@ class FrameFile(EmbeddedCTkFrame):
         self._viewmodel = viewmodel
         self.file_path = file_path
         self.filename = file_path.name
-        self.is_analyzed = is_analyzed
+        self.is_processed = is_processed
         self._get_widgets()
         self._place_widgets()
 
@@ -41,7 +41,7 @@ class FrameFile(EmbeddedCTkFrame):
         self._label_filename.bind("<Button-1>", self.select)
         self._label_status = CTkLabel(master=self, text="")
         self._label_status.bind("<Button-1>", self.select)
-        self.set_status(self.is_analyzed)
+        self.set_status(self.is_processed)
 
     def select(self, event=None):
         self._viewmodel.set_selected_videos([self.file_path])
@@ -52,9 +52,9 @@ class FrameFile(EmbeddedCTkFrame):
         self.configure(fg_color="transparent")
         self._label_filename.configure(font=CTkFont())
 
-    def set_status(self, is_analyzed):
+    def set_status(self, is_processed):
         status_img = CTkImage(
-            light_image=Image.open(self.status_img_paths[is_analyzed]),
+            light_image=Image.open(self.status_img_paths[is_processed]),
             size=(15, 15),
         )
         self._label_status.configure(image=status_img)
@@ -130,5 +130,5 @@ class TabviewFiles(CustomCTkTabview):
             master=self.tab(self._title),
             viewmodel=self._viewmodel,
             file_path=video.get_path(),
-            is_analyzed=False,
+            is_processed=False,
         )

@@ -35,7 +35,7 @@ from traffic_counter.adapter_ui.view_model import (
     MissingCoordinate,
     ViewModel,
 )
-from traffic_counter.analysis.analyze import analyze
+from traffic_counter.plugin_video_processing.process import process
 from traffic_counter.application.analysis.traffic_counting_specification import (
     CountingSpecificationDto,
 )
@@ -126,12 +126,12 @@ from traffic_counter.plugin_ui.customtkinter_gui.toplevel_export_counts import (
     CancelExportCounts,
     ToplevelExportCounts,
 )
-from traffic_counter.plugin_ui.customtkinter_gui.analyze_progress_bar import (
-    AnalyzeProgressBarWindow
+from traffic_counter.plugin_ui.customtkinter_gui.video_processing_progress_bar_window import (
+    VideoProcessingProgressBarWindow
 )
-from traffic_counter.plugin_ui.customtkinter_gui.analyze_window import (
-    AnalyzeWindow,
-    CancelAnalysis,
+from traffic_counter.plugin_ui.customtkinter_gui.video_processing_choice_window import (
+    CancelProcessing,
+    VideoProcessingChoiceWindow,
 )
 from traffic_counter.plugin_ui.customtkinter_gui.toplevel_export_events import (
     CancelExportEvents,
@@ -1632,28 +1632,28 @@ class DummyViewModel(
         write_json_bz2(ottrk, filename + ".ottrk")
         self._application.add_tracks_of_files(track_files=[Path(filename + ".ottrk")])
 
-    def analyze(self) -> None:
+    def process_video(self) -> None:
         try:
-            detector, tracker = AnalyzeWindow(
-                title="Analyze video",
+            detector, tracker = VideoProcessingChoiceWindow(
+                title="Process video",
                 initial_position=(
                     self._frame_content.winfo_screenwidth() // 2,
                     self._frame_content.winfo_screenheight() // 2,
                 ),
             ).get_data()
 
-            progress_bar = AnalyzeProgressBarWindow(title="Processing video...", initial_position=(
+            progress_bar = VideoProcessingProgressBarWindow(title="Processing video...", initial_position=(
                     self._frame_content.winfo_screenwidth() // 2,
                     self._frame_content.winfo_screenheight() // 2,
                 ),)
 
             logger().info(
-                f"Performing analysis using {detector} detector and {tracker}"
+                f"Processing video using {detector} detector and {tracker}"
             )
             thread = Thread(
-            target=analyze,
+            target=process,
                 args=(self._selected_videos[0], detector, tracker, progress_bar, self.save_ottrk),
             )
             thread.start()
-        except CancelAnalysis:
-            logger().info("User canceled analysis")
+        except CancelProcessing:
+            logger().info("User canceled processing")

@@ -341,5 +341,5 @@ class ViewModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def analyze(self) -> None:
+    def process_video(self) -> None:
         raise NotImplementedError

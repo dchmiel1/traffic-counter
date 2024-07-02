@@ -8,7 +8,7 @@ import os.path as osp
 from ..utils.events import LOGGER
 from ..utils.torch_utils import fuse_model
 
-yolov6_path = os.path.abspath("traffic_counter/analysis/detectors/yolov6")
+yolov6_path = os.path.abspath("traffic_counter/plugin_video_processing/detectors/yolov6")
 sys.path.insert(0, yolov6_path)
 
 def load_state_dict(weights, model, map_location=None):

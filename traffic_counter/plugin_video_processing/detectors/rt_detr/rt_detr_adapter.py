@@ -2,7 +2,7 @@ import numpy as np
 
 from ultralytics import RTDETR
 
-from traffic_counter.analysis.detectors.abstract_detector_adapter import DetectorAdapter
+from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import DetectorAdapter
 
 
 class RTDETRAdapter(DetectorAdapter):

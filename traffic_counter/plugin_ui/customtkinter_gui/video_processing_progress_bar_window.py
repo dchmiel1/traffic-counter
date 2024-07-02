@@ -3,7 +3,7 @@ from typing import Any
 from customtkinter import CTkProgressBar, CTkToplevel, CTkLabel, CTkFont
 
 
-class AnalyzeProgressBarWindow(CTkToplevel):
+class VideoProcessingProgressBarWindow(CTkToplevel):
     def __init__(
         self, title: str, initial_position: tuple[int, int], **kwargs: Any
     ) -> None:

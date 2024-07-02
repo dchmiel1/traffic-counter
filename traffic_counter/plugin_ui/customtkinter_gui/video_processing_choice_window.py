@@ -2,7 +2,7 @@ from typing import Any
 
 from customtkinter import CTkLabel, CTkCheckBox, CTkFrame
 
-from traffic_counter.analysis.analyze import (
+from traffic_counter.plugin_video_processing.process import (
     BOT_SORT_NAME,
     CO_DETR_NAME,
     DEEP_OC_SORT_NAME,
@@ -18,7 +18,7 @@ from traffic_counter.plugin_ui.customtkinter_gui.toplevel_template import (
 )
 
 
-class CancelAnalysis(Exception):
+class CancelProcessing(Exception):
     pass
 
 
@@ -135,7 +135,7 @@ class FrameSetAlgorithms(CTkFrame):
                 return checkbox._text
 
 
-class AnalyzeWindow(ToplevelTemplate):
+class VideoProcessingChoiceWindow(ToplevelTemplate):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
@@ -155,5 +155,5 @@ class AnalyzeWindow(ToplevelTemplate):
     def get_data(self) -> dict:
         self.wait_window()
         if self._canceled:
-            raise CancelAnalysis()
+            raise CancelProcessing()
         return self.det, self.tracker

@@ -136,10 +136,10 @@ class FrameContent(CTkFrame):
             master=self,
             viewmodel=self._viewmodel,
         )
-        self._analyze_button = CTkButton(
+        self._process_button = CTkButton(
             master=self,
-            text="Analyze",
-            command=self._viewmodel.analyze,
+            text="Process video",
+            command=self._viewmodel.process_video,
             width=350,
             height=80,
             font=CTkFont(weight="bold", size=20),
@@ -168,27 +168,27 @@ class FrameContent(CTkFrame):
                 return
         self.show_widgets(False)
 
-    def set_analyzed(self):
+    def set_processed(self):
         self.grid_columnconfigure(1, weight=1, minsize=400)
 
         self._frame_canvas.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         self._frame_track_plotting.grid(row=0, column=1, pady=PADY, sticky=STICKY)
         self._frame_filter.grid(row=1, column=0, pady=PADY, sticky=STICKY)
-        self._analyze_button.grid_forget()
+        self._process_button.grid_forget()
 
-    def set_not_analyzed(self):
+    def set_not_processed(self):
         self.grid_columnconfigure(1, weight=1, minsize=0)
 
         self._frame_canvas.grid(row=0, column=0, padx=PADX*5, pady=PADY*5, sticky=STICKY)
         self._frame_track_plotting.grid_forget()
         self._frame_filter.grid_forget()
-        self._analyze_button.grid(row=1, column=0, pady=PADY, padx=PADX)
+        self._process_button.grid(row=1, column=0, pady=PADY, padx=PADX)
 
-    def show_widgets(self, is_analyzed):
-        if is_analyzed:
-            self.set_analyzed()
+    def show_widgets(self, is_processed):
+        if is_processed:
+            self.set_processed()
         else:
-            self.set_not_analyzed()
+            self.set_not_processed()
 
 
 class FrameNavigation(EmbeddedCTkScrollableFrame):

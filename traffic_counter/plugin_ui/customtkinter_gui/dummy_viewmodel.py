@@ -127,7 +127,7 @@ from traffic_counter.plugin_ui.customtkinter_gui.toplevel_export_counts import (
     ToplevelExportCounts,
 )
 from traffic_counter.plugin_ui.customtkinter_gui.video_processing_progress_bar_window import (
-    VideoProcessingProgressBarWindow
+    VideoProcessingProgressBarWindow,
 )
 from traffic_counter.plugin_ui.customtkinter_gui.video_processing_choice_window import (
     CancelProcessing,
@@ -810,6 +810,7 @@ class DummyViewModel(
     def add_new_section(
         self,
         coordinates: list[tuple[int, int]],
+        real_coordinates: list[tuple[int, int]],
         is_area_section: bool,
         get_metadata: MetadataProvider,
     ) -> None:
@@ -818,7 +819,9 @@ class DummyViewModel(
         elif len(coordinates) == 1:
             raise MissingCoordinate("Second coordinate is missing")
         with contextlib.suppress(CancelAddSection):
-            section = self.__create_section(coordinates, is_area_section, get_metadata)
+            section = self.__create_section(
+                coordinates, real_coordinates, is_area_section, get_metadata
+            )
             if not section.name.startswith(CUTTING_SECTION_MARKER):
                 logger().info(f"New section created: {section.id}")
                 self._update_selected_sections([section.id])
@@ -827,6 +830,7 @@ class DummyViewModel(
     def __create_section(
         self,
         coordinates: list[tuple[int, int]],
+        real_coordinates: list[tuple[int, int]],
         is_area_section: bool,
         get_metadata: MetadataProvider,
     ) -> Section:
@@ -848,6 +852,9 @@ class DummyViewModel(
                 coordinates=[
                     self._to_coordinate(coordinate) for coordinate in coordinates
                 ],
+                real_coordinates=[
+                    self._to_coordinate(coordinate) for coordinate in real_coordinates
+                ],
             )
         else:
             section = LineSection(
@@ -861,6 +868,9 @@ class DummyViewModel(
                 plugin_data={},
                 coordinates=[
                     self._to_coordinate(coordinate) for coordinate in coordinates
+                ],
+                real_coordinates=[
+                    self._to_coordinate(coordinate) for coordinate in real_coordinates
                 ],
             )
         if section is None:
@@ -890,7 +900,10 @@ class DummyViewModel(
             raise ValueError("Metadata of line_section are not defined")
 
     def update_section_coordinates(
-        self, meta_data: dict, coordinates: list[tuple[int, int]]
+        self,
+        meta_data: dict,
+        coordinates: list[tuple[int, int]],
+        real_coordinates: list[tuple[int, int]],
     ) -> None:
         self.__validate_section_information(meta_data, coordinates)
         section_id = SectionId(meta_data[ID])
@@ -901,10 +914,24 @@ class DummyViewModel(
         section.update_coordinates(
             [self._to_coordinate(coordinate) for coordinate in coordinates]
         )
+        section.update_real_coordinates(
+            [self._to_coordinate(coordinate) for coordinate in real_coordinates]
+        )
         self._application.update_section(section)
         logger().info(f"Update section: {section.id}")
         self._update_selected_sections([section.id])
         self._finish_action()
+
+    def update_sections_canvas_coordinates(
+        self,
+        factor: float
+    ) -> None:
+        for section in self.get_all_sections():
+            new_coordinates = [
+                self._to_coordinate((coordinate.x * factor, coordinate.y * factor))
+                for coordinate in section.get_coordinates()
+            ]
+            section.update_coordinates(new_coordinates)
 
     def _to_coordinate(self, coordinate: tuple[int, int]) -> geometry.Coordinate:
         return geometry.Coordinate(coordinate[0], coordinate[1])
@@ -1525,9 +1552,9 @@ class DummyViewModel(
                     "There is no flow configurated.\n"
                     "Please create a flow."
                 ),
-                initial_position=self._window.get_position()
-                if self._window
-                else (0, 0),
+                initial_position=(
+                    self._window.get_position() if self._window else (0, 0)
+                ),
             )
             return
         export_formats: dict = {
@@ -1642,17 +1669,24 @@ class DummyViewModel(
                 ),
             ).get_data()
 
-            progress_bar = VideoProcessingProgressBarWindow(title="Processing video...", initial_position=(
+            progress_bar = VideoProcessingProgressBarWindow(
+                title="Processing video...",
+                initial_position=(
                     self._frame_content.winfo_screenwidth() // 2,
                     self._frame_content.winfo_screenheight() // 2,
-                ),)
-
-            logger().info(
-                f"Processing video using {detector} detector and {tracker}"
+                ),
             )
+
+            logger().info(f"Processing video using {detector} detector and {tracker}")
             thread = Thread(
-            target=process,
-                args=(self._selected_videos[0], detector, tracker, progress_bar, self.save_ottrk),
+                target=process,
+                args=(
+                    self._selected_videos[0],
+                    detector,
+                    tracker,
+                    progress_bar,
+                    self.save_ottrk,
+                ),
             )
             thread.start()
         except CancelProcessing:

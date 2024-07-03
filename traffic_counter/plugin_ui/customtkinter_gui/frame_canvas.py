@@ -32,7 +32,9 @@ from traffic_counter.plugin_ui.customtkinter_gui.constants import (
     STICKY,
     tk_events,
 )
-from traffic_counter.plugin_ui.customtkinter_gui.custom_containers import EmbeddedCTkFrame
+from traffic_counter.plugin_ui.customtkinter_gui.custom_containers import (
+    EmbeddedCTkFrame,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.helpers import get_widget_position
 
 
@@ -65,6 +67,8 @@ class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
     def on_window_resize(self, event):
         diff = abs(self.canvas_background._current_image.width() - self.winfo_width())
         if self._current_image and diff > 20:
+            factor = self.winfo_width() / self.canvas_background._current_image.width()
+            self._viewmodel.update_sections_canvas_coordinates(factor)
             self.add_image(DisplayableImage(self._current_image), layer="background")
 
     def _get_widgets(self) -> None:
@@ -83,7 +87,9 @@ class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
     def resize_image(self, image: DisplayableImage):
         image_width = self.winfo_width()
         factor = image_width / image.width()
-        image = image._image.as_image().resize(((int)(image.width() * factor), (int)(image.height() * factor)))
+        image = image._image.as_image().resize(
+            ((int)(image.width() * factor), (int)(image.height() * factor))
+        )
         return DisplayableImage(PilImage(image))
 
     def add_image(self, image: DisplayableImage, layer: str) -> None:

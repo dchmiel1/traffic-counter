@@ -512,7 +512,7 @@ class PythonTrackDataset(TrackDataset):
         shapely_mapper = ShapelyMapper()
 
         section_geometry = shapely_mapper.map_coordinates_to_line_string(
-            section.get_coordinates()
+            section.get_real_coordinates()
         )
         intersecting_track_ids = self.intersecting_tracks([section], offset)
 

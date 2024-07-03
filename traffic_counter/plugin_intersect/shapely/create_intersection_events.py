@@ -24,11 +24,11 @@ class ShapelyGeometryBuilder(GeometryBuilder[LineString, Polygon]):
 
     @create_section.register
     def _(self, section: LineSection) -> LineString:
-        return LineString([(coord.x, coord.y) for coord in section.get_coordinates()])
+        return LineString([(coord.x, coord.y) for coord in section.get_real_coordinates()])
 
     @create_section.register
     def _(self, section: Area) -> Polygon:
-        return Polygon([(coord.x, coord.y) for coord in section.get_coordinates()])
+        return Polygon([(coord.x, coord.y) for coord in section.get_real_coordinates()])
 
     def create_track(
         self, track: Track, offset: RelativeOffsetCoordinate

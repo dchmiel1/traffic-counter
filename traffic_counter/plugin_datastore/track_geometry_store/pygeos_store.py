@@ -45,7 +45,7 @@ def line_sections_to_pygeos_multi(sections: Iterable[Section]) -> Geometry:
 
 
 def line_section_to_pygeos(section: Section) -> Geometry:
-    return linestrings([[(c.x, c.y) for c in section.get_coordinates()]])
+    return linestrings([[(c.x, c.y) for c in section.get_real_coordinates()]])
 
 
 def area_sections_to_pygeos(sections: Iterable[Section]) -> list[Geometry]:
@@ -53,7 +53,7 @@ def area_sections_to_pygeos(sections: Iterable[Section]) -> list[Geometry]:
 
 
 def area_section_to_pygeos(section: Section) -> Geometry:
-    geometry = polygons([[(c.x, c.y) for c in section.get_coordinates()]])
+    geometry = polygons([[(c.x, c.y) for c in section.get_real_coordinates()]])
     prepare(geometry)
     return geometry
 

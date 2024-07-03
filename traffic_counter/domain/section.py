@@ -128,7 +128,17 @@ class Section(DataclassValidation):
     @abstractmethod
     def get_coordinates(self) -> list[Coordinate]:
         """
-        Returns a list of all coordinates of this section.
+        Returns a list of all canvas coordinates of this section.
+
+        Returns:
+            list[Coordinate]: all coordinates of this section
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_real_coordinates(self) -> list[Coordinate]:
+        """
+        Returns a list of all real coordinates of this section.
 
         Returns:
             list[Coordinate]: all coordinates of this section
@@ -141,7 +151,17 @@ class Section(DataclassValidation):
         Updates the coordinates of this section.
 
         Args:
-            coordinates (list[Coordinate]): new coordinates of the section
+            coordinates (list[Coordinate]): new canvas coordinates of the section
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_real_coordinates(self, real_coordinates: list[Coordinate]) -> None:
+        """
+        Updates the coordinates of this section.
+
+        Args:
+            real_coordinates (list[Coordinate]): new real coordinates of the section
         """
         raise NotImplementedError
 
@@ -227,10 +247,14 @@ class LineSection(Section):
             which coordinates of a track to build the geometry to intersect.
         plugin_data (dict[str,any]): data that plugins or prototypes can use which are
             not modelled in the domain layer yet
-        coordinates (list[Coordinate]): the coordinates defining the section geometry.
+        coordinates (list[Coordinate]): the coordinates defining the section geometry on
+            the canvas background. It can vary depending on screen resizing
+        real_coordinates (list[Coordinate]): the coordinates defining the real section
+            geometry on the input video.
     """
 
     coordinates: list[Coordinate]
+    real_coordinates: list[Coordinate]
 
     def _validate(self) -> None:
         self.__validate_coordinates(self.coordinates)
@@ -253,10 +277,18 @@ class LineSection(Section):
     def get_coordinates(self) -> list[Coordinate]:
         return self.coordinates.copy()
 
+    def get_real_coordinates(self) -> list[Coordinate]:
+        return self.real_coordinates.copy()
+
     def update_coordinates(self, coordinates: list[Coordinate]) -> None:
         self.__validate_coordinates(coordinates)
         self.coordinates.clear()
         self.coordinates.extend(coordinates)
+
+    def update_real_coordinates(self, real_coordinates: list[Coordinate]):
+        self.__validate_coordinates(real_coordinates)
+        self.real_coordinates.clear()
+        self.real_coordinates.extend(real_coordinates)
 
     def to_dict(self) -> dict:
         """
@@ -308,9 +340,12 @@ class Area(Section):
         plugin_data (dict[str, Any]): data that plugins or prototypes can use which are
             not modelled in the domain layer yet
         coordinates (list[Coordinate]): area defined by list of coordinates
+        real_coordinates (list[Coordinate]): the coordinates defining the real section
+            geometry on the input video.
     """
 
     coordinates: list[Coordinate]
+    real_coordinates: list[Coordinate]
 
     def _validate(self) -> None:
         self.__validate_coordinates(self.coordinates)
@@ -330,10 +365,18 @@ class Area(Section):
     def get_coordinates(self) -> list[Coordinate]:
         return self.coordinates.copy()
 
+    def get_real_coordinates(self) -> list[Coordinate]:
+        return self.real_coordinates.copy()
+
     def update_coordinates(self, coordinates: list[Coordinate]) -> None:
         self.__validate_coordinates(coordinates)
         self.coordinates.clear()
         self.coordinates.extend(coordinates)
+
+    def update_real_coordinates(self, real_coordinates: list[Coordinate]):
+        self.__validate_coordinates(real_coordinates)
+        self.real_coordinates.clear()
+        self.real_coordinates.extend(real_coordinates)
 
     def to_dict(self) -> dict:
         """

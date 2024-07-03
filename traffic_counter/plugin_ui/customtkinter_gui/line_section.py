@@ -334,6 +334,17 @@ class SectionGeometryEditor(CanvasObserver):
     def _get_matadata(self) -> None:
         self._metadata = self._section.to_dict()
 
+    def _calculate_coordinates(self, coords):
+        image = self._canvas.master._current_image
+        new_coords = []
+        for coord in coords:
+            x_factor = coord[0] / self._canvas.winfo_width()
+            y_factor = coord[1] / self._canvas.winfo_height()
+            new_coords.append(
+                (int(x_factor * image.width()), int(y_factor * image.height()))
+            )
+        return new_coords
+
     def update(
         self, coordinate: tuple[int, int], event_type: str, key: str | None
     ) -> None:
@@ -550,7 +561,9 @@ class SectionGeometryEditor(CanvasObserver):
 
     def _update_section(self) -> None:
         coordinates = add_last_coordinate(self._is_area_section, self._coordinates)
-        self._viewmodel.update_section_coordinates(self._metadata, coordinates)
+        self._viewmodel.update_section_coordinates(
+            self._metadata, coordinates, self._calculate_coordinates(coordinates)
+        )
 
     def _abort(self) -> None:
         self.deleter.delete(tag_or_id=TEMPORARY_SECTION_ID)
@@ -641,6 +654,17 @@ class SectionBuilder(SectionGeometryBuilderObserver, CanvasObserver):
             self._name = template.name
             self._metadata = template.to_dict()
 
+    def _calculate_coordinates(self, coords):
+        image = self._canvas.master._current_image
+        new_coords = []
+        for coord in coords:
+            x_factor = coord[0] / self._canvas.winfo_width()
+            y_factor = coord[1] / self._canvas.winfo_height()
+            new_coords.append(
+                (int(x_factor * image.width()), int(y_factor * image.height()))
+            )
+        return new_coords
+
     def update(
         self, coordinate: tuple[int, int], event_type: str, key: str | None
     ) -> None:
@@ -695,6 +719,7 @@ class SectionBuilder(SectionGeometryBuilderObserver, CanvasObserver):
         coordinates = add_last_coordinate(self._is_area_section, self._coordinates)
         self._viewmodel.add_new_section(
             coordinates=coordinates,
+            real_coordinates=self._calculate_coordinates(coordinates),
             is_area_section=self._is_area_section,
             get_metadata=self._get_metadata,
         )

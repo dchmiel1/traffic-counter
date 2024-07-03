@@ -13,7 +13,9 @@ from traffic_counter.adapter_ui.abstract_frame_track_plotting import (
 )
 from traffic_counter.adapter_ui.abstract_frame_tracks import AbstractFrameTracks
 from traffic_counter.adapter_ui.abstract_main_window import AbstractMainWindow
-from traffic_counter.adapter_ui.abstract_treeview_interface import AbstractTreeviewInterface
+from traffic_counter.adapter_ui.abstract_treeview_interface import (
+    AbstractTreeviewInterface,
+)
 from traffic_counter.domain.date import DateRange
 from traffic_counter.domain.flow import Flow
 from traffic_counter.domain.section import Section
@@ -159,6 +161,10 @@ class ViewModel(ABC):
     def update_section_coordinates(
         self, meta_data: dict, coordinates: list[tuple[int, int]]
     ) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_sections_canvas_coordinates(self, factor: float) -> None:
         raise NotImplementedError
 
     @abstractmethod

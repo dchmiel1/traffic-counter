@@ -72,7 +72,7 @@ def get_tracker(tracker_name: str) -> BaseTracker:
 
 
 def get_results_exporter(
-    tracker: BaseTracker, video: str, tracker_name: str
+    tracker: BaseTracker, video: Path, tracker_name: str
 ) -> TracksExporter:
     exporter_class = results_exporter.get(tracker_name)
     if exporter_class is None:

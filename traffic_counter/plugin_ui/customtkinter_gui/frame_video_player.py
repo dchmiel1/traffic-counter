@@ -15,7 +15,7 @@ class VideoDisplay(CTkLabel):
     def __init__(self, master):
         super().__init__(master, text="")
         self.master = master
-        self.paused = False
+        self.paused = True
         self.delay_ms = 10
         self.vid = None
 
@@ -132,14 +132,14 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
     def _open_video(self) -> None:
         if self.video_file:
             self.vid_player.load_video(self.video_file)
-            self.progress_slider.set(-1)
+            self.progress_slider.set(1)
             self.btn_play_pause.configure(text="Play ►")
 
     def _seek(self, value) -> None:
         if self.video_file:
             self.vid_player.seek(int(value))
         else:
-            self.progress_slider.set(-1)
+            self.progress_slider.set(0)
 
     def _play_pause(self) -> None:
         if self.video_file:
@@ -151,20 +151,20 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
                 self.btn_play_pause.configure(text="Play ►")
 
     def _init_slider(self, frames) -> None:
-        self.progress_slider.configure(from_=-1, to=frames, number_of_steps=frames)
+        self.progress_slider.configure(from_=1, to=frames, number_of_steps=frames)
 
     def _update_slider(self, frame) -> None:
         self.progress_slider.set(frame)
 
     def _video_ended_handler(self) -> None:
         self.btn_play_pause.configure(text="Play ►")
-        self.progress_slider.set(-1)
+        self.progress_slider.set(1)
 
     def _get_widgets(self) -> None:
         self.vid_player = VideoDisplay(master=self)
 
         self.progress_slider = CTkSlider(
-            master=self, from_=-1, to=100, number_of_steps=100, command=self._seek
+            master=self, from_=1, to=100, number_of_steps=100, command=self._seek
         )
         self.btn_play_pause = CTkButton(
             master=self, text="Play ►", command=self._play_pause
@@ -180,7 +180,7 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         self.vid_player.set_progress_slider_updater(self._update_slider)
         self.vid_player.set_video_ended_handler(self._video_ended_handler)
         self.vid_player.bind("<Configure>", self.vid_player.on_window_resize)
-        self.progress_slider.set(-1)
+        self.progress_slider.set(1)
 
     def update_items(self) -> None:
         pass

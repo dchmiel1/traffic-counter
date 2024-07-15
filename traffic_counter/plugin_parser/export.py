@@ -40,7 +40,8 @@ class CsvExport(Exporter):
             return
         dataframe = self._set_column_order(dataframe)
         dataframe = dataframe.sort_values(
-            by=[LEVEL_START_TIME, LEVEL_END_TIME, LEVEL_CLASSIFICATION]
+            # by=[LEVEL_START_TIME, LEVEL_END_TIME, LEVEL_CLASSIFICATION]
+            by=[LEVEL_CLASSIFICATION]
         )
         dataframe.to_csv(self.__create_path(), index=False)
         logger().info(f"Counts saved at {self._output_file}")
@@ -48,8 +49,8 @@ class CsvExport(Exporter):
     @staticmethod
     def _set_column_order(dataframe: DataFrame) -> DataFrame:
         desired_columns_order = [
-            LEVEL_START_TIME,
-            LEVEL_END_TIME,
+            # LEVEL_START_TIME,
+            # LEVELT_END_TIME,
             LEVEL_CLASSIFICATION,
             LEVEL_FLOW,
             LEVEL_FROM_SECTION,
@@ -112,26 +113,31 @@ class TagExploder:
 
     def explode(self) -> list[Tag]:
         tags = []
-        start_without_seconds = (
-            self._specification.counting_specification.start.replace(
-                second=0, microsecond=0
-            )
-        )
-        maximum = self._specification.counting_specification.end - start_without_seconds
-        duration = int(maximum.total_seconds())
-        interval = self._specification.counting_specification.interval_in_minutes * 60
+        # start_without_seconds = (
+        #     self._specification.counting_specification.start.replace(
+        #         second=0, microsecond=0
+        #     )
+        # )
+        # maximum = self._specification.counting_specification.end - start_without_seconds
+        # duration = int(maximum.total_seconds())
+        # interval = self._specification.counting_specification.interval_in_minutes * 60
         for flow in self._specification.flow_name_info:
             for mode in self._specification.counting_specification.modes:
-                for delta in range(0, duration, interval):
-                    offset = timedelta(seconds=delta)
-                    start = start_without_seconds + offset
-                    interval_time = timedelta(seconds=interval)
-                    tag = (
-                        create_flow_tag(flow.name)
-                        .combine(create_mode_tag(mode))
-                        .combine(create_timeslot_tag(start, interval_time))
-                    )
-                    tags.append(tag)
+                # for delta in range(0, duration, interval):
+                #     offset = timedelta(seconds=delta)
+                #     start = start_without_seconds + offset
+                #     interval_time = timedelta(seconds=interval)
+                #     tag = (
+                #         create_flow_tag(flow.name)
+                #         .combine(create_mode_tag(mode))
+                #         .combine(create_timeslot_tag(start, interval_time))
+                #     )
+                #     tags.append(tag)
+                tag = (
+                    create_flow_tag(flow.name)
+                    .combine(create_mode_tag(mode))
+                )
+                tags.append(tag)
         return tags
 
 

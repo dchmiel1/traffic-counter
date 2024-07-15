@@ -15,10 +15,9 @@ class CountingSpecificationDto:
     """
     Data transfer object to represent the counting.
     """
-
-    start: datetime
-    end: datetime
-    interval_in_minutes: int
+    # start: datetime
+    # end: datetime
+    # interval_in_minutes: int
     modes: list[str]
     output_format: str
     output_file: str

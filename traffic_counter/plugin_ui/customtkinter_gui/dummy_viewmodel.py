@@ -96,7 +96,7 @@ from traffic_counter.domain.video import (
 from traffic_counter.plugin_parser.json_parser import write_json_bz2
 from traffic_counter.plugin_ui.customtkinter_gui import toplevel_export_events
 from traffic_counter.plugin_ui.customtkinter_gui.frame_sections import COLUMN_SECTION
-from traffic_counter.plugin_ui.customtkinter_gui.helpers import ask_for_save_file_path
+from traffic_counter.plugin_ui.customtkinter_gui.helpers import ask_for_save_file_path, ask_for_save_file_name
 from traffic_counter.plugin_ui.customtkinter_gui.line_section import (
     ArrowPainter,
     CanvasElementDeleter,
@@ -922,10 +922,7 @@ class DummyViewModel(
         self._update_selected_sections([section.id])
         self._finish_action()
 
-    def update_sections_canvas_coordinates(
-        self,
-        factor: float
-    ) -> None:
+    def update_sections_canvas_coordinates(self, factor: float) -> None:
         for section in self.get_all_sections():
             new_coordinates = [
                 self._to_coordinate((coordinate.x * factor, coordinate.y * factor))
@@ -1565,28 +1562,36 @@ class DummyViewModel(
         start = self._application._videos_metadata.first_video_start
         end = self._application._videos_metadata.last_video_end
         modes = list(self._application._tracks_metadata.detection_classifications)
-        default_values: dict = {
-            INTERVAL: DEFAULT_COUNTING_INTERVAL_IN_MINUTES,
-            START: start,
-            END: end,
-            EXPORT_FORMAT: default_format,
-        }
+        # default_values: dict = {
+        #     INTERVAL: DEFAULT_COUNTING_INTERVAL_IN_MINUTES,
+        #     START: start,
+        #     END: end,
+        #     EXPORT_FORMAT: default_format,
+        # }
         try:
-            export_values: dict = ToplevelExportCounts(
-                title="Export counts",
-                initial_position=(50, 50),
-                input_values=default_values,
-                export_formats=export_formats,
-                viewmodel=self,
-            ).get_data()
-            logger().debug(export_values)
+            #  export_values: dict = ToplevelExportCounts(
+            #     title="Export counts",
+            #     initial_position=(50, 50),
+            #     input_values=default_values,
+            #     export_formats=export_formats,
+            #     viewmodel=self,
+            # ).get_data()
+            # logger().debug(export_values)
+            export_file = ask_for_save_file_name(
+                title="Save counts as",
+                filetypes=[(default_format, export_formats[default_format])],
+                defaultextension=export_formats[default_format],
+                initialfile="counts",
+            )
             export_specification = CountingSpecificationDto(
-                interval_in_minutes=export_values[INTERVAL],
-                start=export_values[START],
-                end=export_values[END],
+                # interval_in_minutes=export_values[INTERVAL],
+                # start=export_values[START],
+                # end=export_values[END],
                 modes=modes,
-                output_format=export_values[EXPORT_FORMAT],
-                output_file=export_values[EXPORT_FILE],
+                # output_format=export_values[EXPORT_FORMAT],
+                # output_file=export_values[EXPORT_FILE],
+                output_format=default_format,
+                output_file=export_file,
             )
             self._application.export_counts(export_specification)
         except CancelExportCounts:

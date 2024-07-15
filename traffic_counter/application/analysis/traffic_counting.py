@@ -810,10 +810,11 @@ class SimpleTaggerFactory(TaggerFactory):
             Tagger: Tagger specified by the given CountingSpecificationDto
         """
         mode_tagger = ModeTagger(self._track_repository)
-        time_tagger = TimeslotTagger(
-            timedelta(minutes=specification.interval_in_minutes)
-        )
-        return CombinedTagger(mode_tagger, time_tagger)
+        return mode_tagger
+        # time_tagger = TimeslotTagger(
+        #     timedelta(minutes=specification.interval_in_minutes)
+        # )
+        # return CominedTagger(mode_tagger, time_tagger)
 
 
 class Exporter(ABC):

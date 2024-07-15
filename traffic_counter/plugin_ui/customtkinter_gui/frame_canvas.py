@@ -55,11 +55,11 @@ class DisplayableImage:
 class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
     def __init__(self, viewmodel: ViewModel, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self._current_image = None
         self._viewmodel = viewmodel
         self._get_widgets()
         self._place_widgets()
         self.introduce_to_viewmodel()
-        self._current_image = None
 
     def introduce_to_viewmodel(self) -> None:
         self._viewmodel.set_frame_canvas(self)
@@ -99,21 +99,26 @@ class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
     def clear_image(self) -> None:
         self.canvas_background.clear_image()
 
+    def set_current_image(self, image: TrackImage):
+        self._current_image = image
+
 
 class CanvasBackground(AbstractCanvas):
     def __init__(self, viewmodel: ViewModel, **kwargs: Any):
         super().__init__(**kwargs)
         self._viewmodel = viewmodel
+        self.logo_img_path = r"traffic_counter/assets/logo.png"
         self.event_handler = CanvasEventHandler(canvas=self)
         self.introduce_to_viewmodel()
 
         self._current_image: ImageTk.PhotoImage
         self._current_id: Any = None
         self.add_preview_image()
+        self.master.set_current_image(PilImage(Image.open(self.logo_img_path)))
 
     def add_preview_image(self) -> None:
-        if Path(r"traffic_counter/assets/logo.png").exists():
-            preview_image = Image.open(r"traffic_counter/assets/logo.png")
+        if Path(self.logo_img_path).exists():
+            preview_image = Image.open(self.logo_img_path)
             self._current_image = ImageTk.PhotoImage(preview_image)
             self._draw()
 

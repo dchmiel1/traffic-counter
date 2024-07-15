@@ -267,7 +267,7 @@ class OTAnalyticsGui:
 
     def _show_gui(self) -> None:
         set_appearance_mode("System")
-        set_default_color_theme("green")
+        set_default_color_theme("blue")
 
         self._app.title("OTAnalytics")
         self._app.minsize(width=1024, height=768)

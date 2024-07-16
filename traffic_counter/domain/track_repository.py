@@ -253,3 +253,6 @@ class TrackFileRepository:
             set[Path]: all tracks within the repository.
         """
         return self._files.copy()
+
+    def clear(self):
+        self._files.clear()

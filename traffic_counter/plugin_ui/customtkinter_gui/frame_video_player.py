@@ -186,5 +186,6 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         pass
 
     def update_selected_items(self, item_ids: list[str]):
-        self.video_file = item_ids[0].replace("\\", "/")
-        self._open_video()
+        if len(item_ids) > 0:
+            self.video_file = item_ids[0].replace("\\", "/")
+            self._open_video()

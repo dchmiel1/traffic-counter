@@ -119,6 +119,7 @@ class FrameContent(CTkFrame):
         self, master: Any, viewmodel: ViewModel, layers: Sequence[Layer], **kwargs: Any
     ) -> None:
         super().__init__(master=master, **kwargs)
+        self.selected_video = None
         self._viewmodel = viewmodel
         self._layers = layers
         self._introduce_to_viewmodel()
@@ -160,6 +161,8 @@ class FrameContent(CTkFrame):
             self.update_selected_items([self.selected_video])
 
     def update_selected_items(self, item_ids: list[str]):
+        if not len(item_ids):
+            return
         self.selected_video = item_ids[0]
         track_files = self._viewmodel.get_all_track_files()
         for track_file in track_files:
@@ -207,7 +210,7 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
             master=self, viewmodel=self._viewmodel
         )
         self._frame_start = TabviewStart(master=self, viewmodel=self._viewmodel)
-        self._tabview_input_files = TabviewFiles(master=self, viewmodel=self._viewmodel)
+        # self._tabview_input_files = TabviewFiles(master=self, viewmodel=self._viewmodel)
         self._tabview_configuration = TabviewConfiguration(
             master=self, viewmodel=self._viewmodel
         )
@@ -217,8 +220,8 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
         self.grid_rowconfigure((1, 2), weight=1)
         self.grid_columnconfigure((0, 3), weight=0)
         self._frame_start.grid(row=0, column=0, pady=PADY, sticky=STICKY)
-        self._tabview_input_files.grid(row=1, column=0, pady=PADY, sticky=STICKY)
-        self._tabview_configuration.grid(row=2, column=0, pady=PADY, sticky=STICKY)
+        # self._tabview_input_files.grid(row=1, column=0, pady=PADY, sticky=STICKY)
+        self._tabview_configuration.grid(row=1, column=0, pady=PADY, sticky=STICKY)
         self._frame_analysis.grid(row=3, column=0, pady=PADY, sticky=STICKY)
 
 

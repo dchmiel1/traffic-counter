@@ -288,6 +288,7 @@ class Datastore:
         self._track_to_video_repository.clear()
         self._track_repository.clear()
         self._video_repository.clear()
+        self._track_file_repository.clear()
 
     def load_video_files(self, files: list[Path]) -> None:
         raised_exceptions: list[Exception] = []

@@ -116,6 +116,8 @@ class TabviewFiles(CustomCTkTabview):
 
     def update_selected_items(self, item_ids: list[str]):
         self.unselect_all()
+        if not len(item_ids):
+            return
         for file in self.files:
             if str(file.file_path) == item_ids[0]:
                 file.select()

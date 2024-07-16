@@ -234,9 +234,9 @@ class DummyViewModel(
         self._update_enabled_buttons()
 
     def notify_files(self) -> None:
-        if self._treeview_files is None:
-            raise MissingInjectedInstanceError(type(self._treeview_files).__name__)
-        self._treeview_files.update_items()
+        # if self._treeview_files is None:
+        #     raise MissingInjectedInstanceError(type(self._treeview_files).__name__)
+        # self._treeview_files.update_items()
         self._frame_content.update_items()
         self._update_enabled_buttons()
 
@@ -423,16 +423,24 @@ class DummyViewModel(
         self._treeview_videos.update_selected_items(current_paths)
         self._update_enabled_video_buttons()
 
+    def _clear(self):
+        self._application.remove_videos()
+        self._application._datastore.clear_repositories()
+        self._reset_filters()
+        self._reset_plotting_layer()
+
     def add_video(self) -> None:
-        track_files = askopenfilenames(
+        video_file = askopenfilename(
             title="Load video files",
             filetypes=[("video file", SUPPORTED_VIDEO_FILE_TYPES)],
         )
-        if not track_files:
+        if not video_file:
             return
-        logger().info(f"Video files to load: {track_files}")
-        paths = [Path(file) for file in track_files]
-        self._application.add_videos(files=paths)
+        logger().info(f"Video file to load: {video_file}")
+        file_path = Path(video_file)
+        self._clear()
+        self._application.add_videos(files=[file_path])
+        self.set_selected_videos([file_path])
 
     def remove_videos(self) -> None:
         self._application.remove_videos()
@@ -674,14 +682,15 @@ class DummyViewModel(
 
     @action
     def load_tracks(self) -> None:
-        track_files = askopenfilenames(
+        track_file = askopenfilename(
             title="Load track files", filetypes=[("tracks file", "*.ottrk")]
         )
-        if not track_files:
+        if not track_file:
             return
-        logger().info(f"Tracks files to load: {track_files}")
-        track_paths = [Path(file) for file in track_files]
-        self._application.add_tracks_of_files(track_files=track_paths)
+        logger().info(f"Tracks files to load: {track_file}")
+        file_path = Path(track_file)
+        self._clear()
+        self._application.add_tracks_of_files(track_files=[file_path])
 
     def load_configuration(self) -> None:  # sourcery skip: avoid-builtin-shadow
         # INFO: Current behavior: Overwrites existing sections

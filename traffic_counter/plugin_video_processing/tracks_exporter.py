@@ -3,6 +3,7 @@ import datetime
 import json
 import time
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from dataclasses import dataclass
 
 import cv2
@@ -148,7 +149,7 @@ class TracksExporter(ABC):
 
     @property
     def ottrk(self):
-        ottrk = OTTRK_BASE
+        ottrk = deepcopy(OTTRK_BASE)
         ottrk["metadata"]["detection"]["model"]["classes"] = CLASSES
         ottrk["metadata"]["video"] = self.metadata
 

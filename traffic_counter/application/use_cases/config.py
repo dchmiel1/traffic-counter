@@ -14,13 +14,13 @@ class SaveOtconfig:
         self._config_parser = config_parser
 
     def __call__(self, file: Path) -> None:
-        if self._datastore.project.start_date:
-            self._config_parser.serialize(
-                project=self._datastore.project,
-                video_files=self._datastore.get_all_videos(),
-                sections=self._datastore.get_all_sections(),
-                flows=self._datastore.get_all_flows(),
-                file=file,
-            )
-        else:
-            raise MissingDate()
+        # if self._datastore.project.start_date:
+        self._config_parser.serialize(
+            project=self._datastore.project,
+            video_files=self._datastore.get_all_videos(),
+            sections=self._datastore.get_all_sections(),
+            flows=self._datastore.get_all_flows(),
+            file=file,
+        )
+        # else:
+        #     raise MissingDate()

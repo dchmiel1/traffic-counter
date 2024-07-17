@@ -16,9 +16,9 @@ class Project:
     start_date: Optional[datetime]
 
     def to_dict(self) -> dict:
-        if self.start_date:
-            return {
-                NAME: self.name,
-                START_DATE: self.start_date.timestamp(),
-            }
-        raise StartDateMissing()
+        # if self.start_date:
+        return {
+            NAME: self.name,
+            START_DATE: 0,
+        }
+        # raise StartDateMissing()

@@ -17,6 +17,7 @@ LINE: str = "line"
 AREA: str = "area"
 CUTTING: str = "cutting"
 COORDINATES: str = "coordinates"
+REAL_COORDINATES: str = "real_coordinates"
 RELATIVE_OFFSET_COORDINATES: str = "relative_offset_coordinates"
 PLUGIN_DATA: str = "plugin_data"
 
@@ -301,6 +302,7 @@ class LineSection(Section):
             TYPE: self.get_type().value,
             RELATIVE_OFFSET_COORDINATES: self._serialize_relative_offset_coordinates(),
             COORDINATES: [coordinate.to_dict() for coordinate in self.coordinates],
+            REAL_COORDINATES: [coordinate.to_dict() for coordinate in self.real_coordinates],
             PLUGIN_DATA: self.plugin_data,
         }
 
@@ -389,6 +391,7 @@ class Area(Section):
             NAME: self.name,
             RELATIVE_OFFSET_COORDINATES: self._serialize_relative_offset_coordinates(),
             COORDINATES: [coordinate.to_dict() for coordinate in self.coordinates],
+            REAL_COORDINATES: [coordinate.to_dict() for coordinate in self.real_coordinates],
             PLUGIN_DATA: self.plugin_data,
         }
 

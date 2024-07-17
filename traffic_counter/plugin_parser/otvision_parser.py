@@ -611,9 +611,15 @@ class OtFlowParser(FlowParser):
         name = self._parse_name(data)
         relative_offset_coordinates = self._parse_relative_offset_coordinates(data)
         coordinates = self._parse_coordinates(data)
+        real_coordinates = self._parse_real_coordinates(data)
         plugin_data = self._parse_plugin_data(data)
         return LineSection(
-            section_id, name, relative_offset_coordinates, plugin_data, coordinates
+            section_id,
+            name,
+            relative_offset_coordinates,
+            plugin_data,
+            coordinates,
+            real_coordinates,
         )
 
     def _parse_section_id(self, data: dict) -> SectionId:
@@ -637,9 +643,15 @@ class OtFlowParser(FlowParser):
         name = self._parse_name(data)
         relative_offset_coordinates = self._parse_relative_offset_coordinates(data)
         coordinates = self._parse_coordinates(data)
+        real_coordinates = self._parse_real_coordinates(data)
         plugin_data = self._parse_plugin_data(data)
         return Area(
-            section_id, name, relative_offset_coordinates, plugin_data, coordinates
+            section_id,
+            name,
+            relative_offset_coordinates,
+            plugin_data,
+            coordinates,
+            real_coordinates,
         )
 
     def _parse_coordinates(self, data: dict) -> list[Coordinate]:
@@ -652,6 +664,19 @@ class OtFlowParser(FlowParser):
             list[Coordinate]: coordinates
         """
         return [self._parse_coordinate(entry) for entry in data[section.COORDINATES]]
+
+    def _parse_real_coordinates(self, data: dict) -> list[Coordinate]:
+        """Parse data to real coordinates.
+
+        Args:
+            data (dict): data to parse to coordinates
+
+        Returns:
+            list[Coordinate]: real_coordinates
+        """
+        return [
+            self._parse_coordinate(entry) for entry in data[section.REAL_COORDINATES]
+        ]
 
     def _parse_coordinate(self, data: dict) -> Coordinate:
         """Parse data to coordinate.

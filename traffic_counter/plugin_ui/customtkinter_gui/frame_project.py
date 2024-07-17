@@ -63,70 +63,80 @@ class FrameProject(AbstractFrameProject, EmbeddedCTkFrame):
         self._viewmodel.set_frame_project(self)
 
     def _get_widgets(self) -> None:
-        self._label_name = CTkLabel(master=self, text="Name")
-        self._entry_name = CTkEntry(
-            master=self,
-            textvariable=self._project_name,
-            placeholder_text="Project name",
-        )
-        self._start_date_row = DateRow(
-            master=self,
-            viewmodel=self._viewmodel,
-            name="Start date",
-            place_validation_below=True,
-        )
+        # self._label_name = CTkLabel(master=self, text="Name")
+        # self._entry_name = CTkEntry(
+        #     master=self,
+        #     textvariable=self._project_name,
+        #     placeholder_text="Project name",
+        # )
+        # self._start_date_row = DateRow(
+        #     master=self,
+        #     viewmodel=self._viewmodel,
+        #     name="Start date",
+        #     place_validation_below=True,
+        # )
         self._button_frame = EmbeddedCTkFrame(master=self)
+        # self._button_new = CTkButton(
+        #     master=self._button_frame,
+        #     text="New",
+        #     width=10,
+        #     command=self._viewmodel.start_new_project,
+        # )
         self._button_new = CTkButton(
             master=self._button_frame,
             text="New",
-            width=10,
-            command=self._viewmodel.start_new_project,
+            height=35,
+            width=15,
+            command=self._viewmodel.load_video_or_tracks,
         )
         self.button_open = CTkButton(
             master=self._button_frame,
             text="Open...",
+            height=35,
             width=10,
             command=self._viewmodel.load_configuration,
         )
         self.button_save = CTkButton(
             master=self._button_frame,
             text="Save...",
+            height=35,
             width=10,
             command=self._viewmodel.save_configuration,
         )
 
     def _place_widgets(self) -> None:
-        self.grid_rowconfigure(2, weight=1)
+        # self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
         self._button_frame.grid(
-            row=0, column=0, columnspan=2, padx=0, pady=0, sticky=STICKY
+            row=0, column=0, columnspan=2, padx=0, pady=30, sticky=STICKY
         )
         for column, button in enumerate(
             [self._button_new, self.button_open, self.button_save]
         ):
             self._button_frame.grid_columnconfigure(column, weight=1)
             button.grid(row=0, column=column, padx=PADX, pady=PADY, sticky=STICKY)
-        self._label_name.grid(row=1, column=0, padx=PADX, pady=PADY, sticky=STICKY)
-        self._entry_name.grid(row=1, column=1, padx=PADX, pady=PADY, sticky=STICKY)
-        self._start_date_row.grid(row=2, column=0, columnspan=2, sticky=STICKY_WEST)
+        # self._label_name.grid(row=1, column=0, padx=PADX, pady=PADY, sticky=STICKY)
+        # self._entry_name.grid(row=1, column=1, padx=PADX, pady=PADY, sticky=STICKY)
+        # self._start_date_row.grid(row=2, column=0, columnspan=2, sticky=STICKY_WEST)
 
     def _wire_callbacks(self) -> None:
         self._project_name.trace_add("write", callback=self._update_project_name)
-        self._start_date_row.trace_add(callback=self._update_project_start_date)
+        # self._start_date_row.trace_add(callback=self._update_project_start_date)
 
     def _update_project_name(self, name: str, other: str, mode: str) -> None:
         self._viewmodel.update_project_name(self._project_name.get())
 
     def _update_project_start_date(self, name: str, other: str, mode: str) -> None:
-        with contextlib.suppress(InvalidDatetimeFormatError):
-            self._viewmodel.update_project_start_date(
-                self._start_date_row.get_datetime(),
-            )
+        pass
+        # with contextlib.suppress(InvalidDatetimeFormatError):
+        #     self._viewmodel.update_project_start_date(
+        #         self._start_date_row.get_datetime(),
+        #     )
 
     def update(self, name: str, start_date: Optional[datetime]) -> None:
         self._project_name.set(name)
-        self._start_date_row.set_datetime(start_date)
+        # self._start_date_row.set_datetime(start_date)
 
     def set_enabled_general_buttons(self, enabled: bool) -> None:
         new_state = STATE_NORMAL if enabled else STATE_DISABLED

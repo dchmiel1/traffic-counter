@@ -205,11 +205,12 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
         self._frame_project = TabviewProject(
             master=self,
             viewmodel=self._viewmodel,
+            height=10
         )
         self._tabview_input_files = TabviewInputFiles(
             master=self, viewmodel=self._viewmodel
         )
-        self._frame_start = TabviewStart(master=self, viewmodel=self._viewmodel)
+        # self._frame_start = TabviewStart(master=self, viewmodel=self._viewmodel)
         # self._tabview_input_files = TabviewFiles(master=self, viewmodel=self._viewmodel)
         self._tabview_configuration = TabviewConfiguration(
             master=self, viewmodel=self._viewmodel
@@ -219,10 +220,11 @@ class FrameNavigation(EmbeddedCTkScrollableFrame):
     def _place_widgets(self) -> None:
         self.grid_rowconfigure((1, 2), weight=1)
         self.grid_columnconfigure((0, 3), weight=0)
-        self._frame_start.grid(row=0, column=0, pady=PADY, sticky=STICKY)
+        # self._frame_start.grid(row=0, column=0, pady=PADY, sticky=STICKY)
+        self._frame_project.grid(row=0, column=0, pady=PADY, sticky=STICKY)
         # self._tabview_input_files.grid(row=1, column=0, pady=PADY, sticky=STICKY)
         self._tabview_configuration.grid(row=1, column=0, pady=PADY, sticky=STICKY)
-        self._frame_analysis.grid(row=3, column=0, pady=PADY, sticky=STICKY)
+        self._frame_analysis.grid(row=2, column=0, pady=PADY, sticky=STICKY)
 
 
 class TabviewContent(CustomCTkTabview):

@@ -444,21 +444,11 @@ class DummyViewModel(
         )
         return not proceed.canceled
 
-    def add_video(self) -> None:
-        if len(self._selected_videos) > 0 and not self._ask_if_sure():
-            return
-
-        video_file = askopenfilename(
-            title="Load video files",
-            filetypes=[("video file", SUPPORTED_VIDEO_FILE_TYPES)],
-        )
-        if not video_file:
-            return
+    def add_video(self, video_file) -> None:
         logger().info(f"Video file to load: {video_file}")
-        file_path = Path(video_file)
         self._clear()
-        self._application.add_videos(files=[file_path])
-        self.set_selected_videos([file_path])
+        self._application.add_videos(files=[video_file])
+        self.set_selected_videos([video_file])
 
     def remove_videos(self) -> None:
         self._application.remove_videos()
@@ -698,19 +688,32 @@ class DummyViewModel(
             for section_id in self._application.section_state.selected_sections.get()
         ]
 
-    @action
-    def load_tracks(self) -> None:
+    def load_video_or_tracks(self) -> None:
+        file = Path(
+            askopenfilename(
+                title="Load file",
+                filetypes=[
+                    ("track and video files", SUPPORTED_VIDEO_FILE_TYPES + ["*.ottrk"]),
+                ],
+            )
+        )
         if len(self._selected_videos) > 0 and not self._ask_if_sure():
             return
-        track_file = askopenfilename(
-            title="Load track files", filetypes=[("tracks file", "*.ottrk")]
-        )
-        if not track_file:
+
+        if not file.stem:
             return
+        elif file.suffix == ".ottrk":
+            print("ottrk")
+            self.load_tracks(file)
+        else:
+            self.add_video(file)
+
+
+    @action
+    def load_tracks(self, track_file: Path) -> None:
         logger().info(f"Tracks files to load: {track_file}")
-        file_path = Path(track_file)
         self._clear()
-        self._application.add_tracks_of_files(track_files=[file_path])
+        self._application.add_tracks_of_files(track_files=[track_file])
 
     def load_configuration(self) -> None:  # sourcery skip: avoid-builtin-shadow
         # INFO: Current behavior: Overwrites existing sections

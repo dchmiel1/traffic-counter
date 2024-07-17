@@ -84,7 +84,7 @@ class ViewModel(ABC):
         pass
 
     @abstractmethod
-    def add_video(self) -> None:
+    def add_video(self, video_file) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -124,7 +124,11 @@ class ViewModel(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_tracks(self) -> None:
+    def load_video_or_tracks(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def load_tracks(self, track_file) -> None:
         raise NotImplementedError
 
     @abstractmethod

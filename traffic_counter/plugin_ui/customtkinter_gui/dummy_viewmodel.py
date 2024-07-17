@@ -96,7 +96,10 @@ from traffic_counter.domain.video import (
 from traffic_counter.plugin_parser.json_parser import write_json_bz2
 from traffic_counter.plugin_ui.customtkinter_gui import toplevel_export_events
 from traffic_counter.plugin_ui.customtkinter_gui.frame_sections import COLUMN_SECTION
-from traffic_counter.plugin_ui.customtkinter_gui.helpers import ask_for_save_file_path, ask_for_save_file_name
+from traffic_counter.plugin_ui.customtkinter_gui.helpers import (
+    ask_for_save_file_path,
+    ask_for_save_file_name,
+)
 from traffic_counter.plugin_ui.customtkinter_gui.line_section import (
     ArrowPainter,
     CanvasElementDeleter,
@@ -206,6 +209,7 @@ class DummyViewModel(
         name_generator: FlowNameGenerator,
         event_list_export_formats: dict,
     ) -> None:
+        self._selected_videos = []
         self._application = application
         self._flow_parser: FlowParser = flow_parser
         self._name_generator = name_generator
@@ -429,7 +433,21 @@ class DummyViewModel(
         self._reset_filters()
         self._reset_plotting_layer()
 
+    def _ask_if_sure(self):
+        proceed = InfoBox(
+            message=(
+                "Are you sure you want to proceed?\n"
+                "All configured project settings, sections, flows, tracks and videos will be lost"
+            ),
+            initial_position=self._get_window_position(),
+            show_cancel=True,
+        )
+        return not proceed.canceled
+
     def add_video(self) -> None:
+        if len(self._selected_videos) > 0 and not self._ask_if_sure():
+            return
+
         video_file = askopenfilename(
             title="Load video files",
             filetypes=[("video file", SUPPORTED_VIDEO_FILE_TYPES)],
@@ -682,6 +700,8 @@ class DummyViewModel(
 
     @action
     def load_tracks(self) -> None:
+        if len(self._selected_videos) > 0 and not self._ask_if_sure():
+            return
         track_file = askopenfilename(
             title="Load track files", filetypes=[("tracks file", "*.ottrk")]
         )

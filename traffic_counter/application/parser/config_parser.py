@@ -32,6 +32,7 @@ class OtConfig:
     project: Project
     analysis: AnalysisConfig
     videos: Sequence[Video]
+    track_path: Path
     sections: Sequence[Section]
     flows: Sequence[Flow]
 
@@ -53,6 +54,7 @@ class ConfigParser(ABC):
         self,
         project: Project,
         video_files: Iterable[Video],
+        track_files: Iterable[Path],
         sections: Iterable[Section],
         flows: Iterable[Flow],
         file: Path,

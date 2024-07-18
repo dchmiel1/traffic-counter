@@ -703,7 +703,6 @@ class DummyViewModel(
         if not file.stem:
             return
         elif file.suffix == ".ottrk":
-            print("ottrk")
             self.load_tracks(file)
         else:
             self.add_video(file)

@@ -4,7 +4,9 @@ from pathlib import Path
 from typing import Iterable
 
 from traffic_counter.application import project
-from traffic_counter.application.config_specification import OtConfigDefaultValueProvider
+from traffic_counter.application.config_specification import (
+    OtConfigDefaultValueProvider,
+)
 from traffic_counter.application.datastore import FlowParser, VideoParser
 from traffic_counter.application.parser.config_parser import (
     AnalysisConfig,
@@ -98,6 +100,7 @@ class OtConfigParser(ConfigParser):
         _project = self._parse_project(fixed_content[PROJECT])
         analysis_config = self._parse_analysis(fixed_content[ANALYSIS], base_folder)
         videos = self._video_parser.parse_list(fixed_content[video.VIDEOS], base_folder)
+        track_path = self._parse_track_file(fixed_content["tracks"], base_folder)
         sections, flows = self._flow_parser.parse_content(
             fixed_content[section.SECTIONS], fixed_content[flow.FLOWS]
         )
@@ -105,9 +108,14 @@ class OtConfigParser(ConfigParser):
             project=_project,
             analysis=analysis_config,
             videos=videos,
+            track_path=track_path,
             sections=sections,
             flows=flows,
         )
+
+    def _parse_track_file(self, track_files: list[dict], base_folder: Path):
+        if len(track_files) > 0:
+            return Path(base_folder, track_files[0]["path"])
 
     def _parse_project(self, data: dict) -> Project:
         _validate_data(data, [project.NAME, project.START_DATE])
@@ -154,10 +162,17 @@ class OtConfigParser(ConfigParser):
     ) -> set[Path]:
         return {base_folder / _file for _file in track_files}
 
+    def _serialize_track_content(self, track_files):
+        tracks_content = {"tracks": []}
+        if len(track_files) > 0:
+            tracks_content["tracks"].append({"path": list(track_files)[0].name})
+        return tracks_content
+
     def serialize(
         self,
         project: Project,
         video_files: Iterable[Video],
+        track_files: Iterable[Path],
         sections: Iterable[Section],
         flows: Iterable[Flow],
         file: Path,
@@ -181,8 +196,10 @@ class OtConfigParser(ConfigParser):
             video_files,
             relative_to=parent_folder,
         )
+        track_content = self._serialize_track_content(track_files)
         section_content = self._flow_parser.convert(sections, flows)
         content: dict[str, list[dict] | dict] = {PROJECT: project_content}
         content |= video_content
+        content |= track_content
         content |= section_content
         write_json(data=content, path=file)

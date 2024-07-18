@@ -122,7 +122,9 @@ class OTAnalyticsApplication:
         self._export_counts = export_counts
         self._project_updater = project_updater
         self._save_otconfig = SaveOtconfig(
-            datastore, config_parser=datastore._config_parser
+            datastore,
+            get_all_track_files,
+            config_parser=datastore._config_parser,
         )
         self._create_events = create_events
         self._load_otflow = load_otflow
@@ -134,6 +136,7 @@ class OTAnalyticsApplication:
         self._track_repository_size = TrackRepositorySize(
             self._datastore._track_repository
         )
+        self._datastore.set_load_track_files(load_track_files)
 
     def connect_observers(self) -> None:
         """

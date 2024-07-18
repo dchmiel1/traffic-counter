@@ -23,7 +23,7 @@ class FrameFile(EmbeddedCTkFrame):
         self,
         parent,
         viewmodel: ViewModel,
-        file_path: str,
+        file_path: Path,
         is_processed: bool,
         **kwargs: Any,
     ) -> None:
@@ -44,7 +44,7 @@ class FrameFile(EmbeddedCTkFrame):
         self.set_status(self.is_processed)
 
     def select(self, event=None):
-        self._viewmodel.set_selected_videos([self.file_path])
+        self._viewmodel.set_selected_videos([str(self.file_path)])
         self.configure(fg_color="#3076FF")
         self._label_filename.configure(font=CTkFont(weight="bold"))
 

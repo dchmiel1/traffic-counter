@@ -273,9 +273,14 @@ class Datastore:
         """
         self._section_repository.register_sections_observer(observer)
 
+    def set_load_track_files(self, loader):
+        self.load_track_files = loader
+
     def load_otconfig(self, file: Path) -> None:
         self.clear_repositories()
         config = self._config_parser.parse(file)
+        if config.track_path is not None:
+            self.load_track_files([config.track_path])
         self.project = config.project
         self._video_repository.add_all(config.videos)
         self._section_repository.add_all(config.sections)

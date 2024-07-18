@@ -1,6 +1,6 @@
 from typing import Any
 
-from customtkinter import CTkLabel, CTkCheckBox, CTkFrame
+from customtkinter import CTkLabel, CTkCheckBox, CTkFrame, CTkFont
 
 from traffic_counter.plugin_video_processing.process import (
     BOT_SORT_NAME,
@@ -105,20 +105,46 @@ class FrameSetAlgorithms(CTkFrame):
             self.checkbox_deep_oc_sort,
         ]
 
+        self.save_vid_checkbox = CTkCheckBox(
+            master=self,
+            text="Save processed video",
+            corner_radius=0,
+            font=CTkFont(size=14),
+            checkbox_width=18,
+            checkbox_height=18,
+        )
+
     def _place_widgets(self) -> None:
         self.grid_columnconfigure((0, 1), pad=PADX * 3)
-        self.label_detector.grid(row=0, column=0, padx=PADX, pady=PADY, sticky=STICKY)
-        self.checkbox_yolo.grid(row=1, column=0, padx=PADX, pady=PADY, sticky=STICKY)
-        self.checkbox_rtdetr.grid(row=2, column=0, padx=PADX, pady=PADY, sticky=STICKY)
-        self.checkbox_codetr.grid(row=3, column=0, padx=PADX, pady=PADY, sticky=STICKY)
+        self.grid_rowconfigure((4), minsize=20)
+        self.label_detector.grid(
+            row=0, column=0, padx=PADX * 3, pady=PADY * 3, sticky=STICKY
+        )
+        self.checkbox_yolo.grid(
+            row=1, column=0, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
+        self.checkbox_rtdetr.grid(
+            row=2, column=0, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
+        self.checkbox_codetr.grid(
+            row=3, column=0, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
 
-        self.label_tracker.grid(row=0, column=1, padx=PADX, pady=PADY, sticky=STICKY)
-        self.checkbox_botsort.grid(row=1, column=1, padx=PADX, pady=PADY, sticky=STICKY)
+        self.label_tracker.grid(
+            row=0, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
+        self.checkbox_botsort.grid(
+            row=1, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
         self.checkbox_smiletrack.grid(
-            row=2, column=1, padx=PADX, pady=PADY, sticky=STICKY
+            row=2, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
         )
         self.checkbox_deep_oc_sort.grid(
-            row=3, column=1, padx=PADX, pady=PADY, sticky=STICKY
+            row=3, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
+
+        self.save_vid_checkbox.grid(
+            row=5, column=0, padx=PADX , pady=PADY*3, sticky=STICKY
         )
 
     def set_focus(self):
@@ -133,6 +159,9 @@ class FrameSetAlgorithms(CTkFrame):
         for checkbox in self.tracker_checkboxes:
             if checkbox.get():
                 return checkbox._text
+
+    def is_save_video_checked(self):
+        return self.save_vid_checkbox.get()
 
 
 class VideoProcessingChoiceWindow(ToplevelTemplate):
@@ -149,6 +178,7 @@ class VideoProcessingChoiceWindow(ToplevelTemplate):
         self.tracker = self._frame_content.get_selected_tracker()
         if self.tracker is None:
             raise TrackerNotSelected()
+        self.save_processed_video = self._frame_content.is_save_video_checked()
 
         self._close()
 
@@ -156,4 +186,4 @@ class VideoProcessingChoiceWindow(ToplevelTemplate):
         self.wait_window()
         if self._canceled:
             raise CancelProcessing()
-        return self.det, self.tracker
+        return self.det, self.tracker, self.save_processed_video

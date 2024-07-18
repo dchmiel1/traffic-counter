@@ -81,31 +81,56 @@ def get_results_exporter(
     return exporter_class(tracker, video)
 
 
+def initialize_video_writer(vid_reader, filename):
+    fps = vid_reader.get(cv2.CAP_PROP_FPS)
+    width = vid_reader.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = vid_reader.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    return cv2.VideoWriter(filename, fourcc, int(fps), (int(width), int(height)))
+
+
 def process(
-    video_path: Path,
+    video_path: str,
     detector_name: str,
     tracker_name: str,
     progress_bar: VideoProcessingProgressBarWindow,
     data_handler: Callable,
+    save_processed_video: bool,
 ):
+    video_path = Path(video_path)
+
     detector = get_detector(detector_name)
     tracker = get_tracker(tracker_name)
     exporter = get_results_exporter(tracker, video_path, tracker_name)
-    vid = cv2.VideoCapture(video_path)
-    frame_count = vid.get(cv2.CAP_PROP_FRAME_COUNT)
+    vid_reader = cv2.VideoCapture(video_path)
+    frame_count = vid_reader.get(cv2.CAP_PROP_FRAME_COUNT)
+
+    if save_processed_video:
+        processed_video_filename = "_processed.".join(str(video_path).rsplit(".", 1))
+        vid_writer = initialize_video_writer(vid_reader, processed_video_filename)
+    else:
+        processed_video_filename = None
 
     frame_id = 0
     while True:
         frame_id += 1
-        ret, im = vid.read()
+        ret, im = vid_reader.read()
         if not ret:
             break
 
         dets = detector.detect(im)
         tracker.update(dets, im)
         exporter.update(frame_id)
+
+        if save_processed_video:
+            tracker.plot_results(im, show_trajectories=True)
+            vid_writer.write(im)
+
         print(frame_id)
         progress_bar.update(frame_id / frame_count)
 
-    vid.release()
-    data_handler(video_path, exporter.ottrk)
+    vid_reader.release()
+    if save_processed_video:
+        vid_writer.release()
+    data_handler(exporter.ottrk, str(video_path), processed_video_filename)

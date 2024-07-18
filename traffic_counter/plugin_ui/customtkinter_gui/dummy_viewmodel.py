@@ -707,7 +707,6 @@ class DummyViewModel(
         else:
             self.add_video(file)
 
-
     @action
     def load_tracks(self, track_file: Path) -> None:
         logger().info(f"Tracks files to load: {track_file}")
@@ -1690,14 +1689,21 @@ class DummyViewModel(
     def set_analysis_frame(self, frame: AbstractFrame) -> None:
         self._frame_analysis = frame
 
+    def handle_processed_data(self, ottrk, video_path: str, processed_video_path: str | None):
+        ottrk_path = self.save_ottrk(video_path, ottrk)
+        self._application.add_tracks_of_files(track_files=[ottrk_path])
+        if processed_video_path:
+            self._video_player.update_selected_items([processed_video_path])
+
+
     def save_ottrk(self, video_path: Path, ottrk):
-        filename = str(video_path).split(".")[0]
+        filename = str(video_path).rsplit(".")[0]
         write_json_bz2(ottrk, filename + ".ottrk")
-        self._application.add_tracks_of_files(track_files=[Path(filename + ".ottrk")])
+        return Path(filename + ".ottrk")
 
     def process_video(self) -> None:
         try:
-            detector, tracker = VideoProcessingChoiceWindow(
+            detector, tracker, save_processed_video = VideoProcessingChoiceWindow(
                 title="Process video",
                 initial_position=(
                     self._frame_content.winfo_screenwidth() // 2,
@@ -1721,7 +1727,8 @@ class DummyViewModel(
                     detector,
                     tracker,
                     progress_bar,
-                    self.save_ottrk,
+                    self.handle_processed_data,
+                    save_processed_video,
                 ),
             )
             thread.start()

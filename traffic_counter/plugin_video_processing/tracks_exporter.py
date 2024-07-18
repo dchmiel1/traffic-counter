@@ -124,18 +124,17 @@ class TrackRecord:
 
 
 class TracksExporter(ABC):
-    def __init__(self, tracker, video_file):
+    def __init__(self, tracker, video_file: Path):
         self.tracker = tracker
         self.video_file = video_file
         self.tracking_records = []
         self._retrieve_metadata()
 
     def _retrieve_metadata(self):
-        video_path = Path(self.video_file)
         vid = cv2.VideoCapture(self.video_file)
         self.metadata = {}
-        self.metadata["filename"] = video_path.name.split(".")[0]
-        self.metadata["filetype"] = "." + video_path.name.split(".")[1]
+        self.metadata["filename"] = self.video_file.name.split(".")[0]
+        self.metadata["filetype"] = "." + self.video_file.name.split(".")[1]
         self.metadata["width"] = vid.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.metadata["height"] = vid.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.metadata["expected_duration"] = 0

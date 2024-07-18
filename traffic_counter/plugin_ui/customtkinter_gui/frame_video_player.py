@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 import cv2
@@ -126,6 +127,10 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         self._activate_widgets()
         self.introduce_to_viewmodel()
 
+    @property
+    def _processed_video(self):
+        return "_processed.".join(str(self.video_file).rsplit(".", 1))
+
     def introduce_to_viewmodel(self) -> None:
         self._viewmodel.set_video_player(self)
 
@@ -186,6 +191,10 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         pass
 
     def update_selected_items(self, item_ids: list[str]):
-        if len(item_ids) > 0:
-            self.video_file = item_ids[0].replace("\\", "/")
-            self._open_video()
+        if len(item_ids) == 0:
+            return
+
+        self.video_file = item_ids[0].replace("\\", "/")
+        if os.path.isfile(self._processed_video):
+            self.video_file = self._processed_video
+        self._open_video()

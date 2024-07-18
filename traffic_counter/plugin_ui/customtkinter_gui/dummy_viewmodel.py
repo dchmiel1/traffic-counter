@@ -697,11 +697,12 @@ class DummyViewModel(
                 ],
             )
         )
+        if not file.stem:
+            return
+
         if len(self._selected_videos) > 0 and not self._ask_if_sure():
             return
 
-        if not file.stem:
-            return
         elif file.suffix == ".ottrk":
             self.load_tracks(file)
         else:

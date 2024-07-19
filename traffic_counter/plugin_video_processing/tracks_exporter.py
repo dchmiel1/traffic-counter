@@ -144,6 +144,18 @@ class TracksExporter(ABC):
         self.metadata["recorded_start_date"] = timestamp
         self.metadata["length"] = "0:00:00.000000"
 
+    def _is_track_valid(self, track):
+        if not track.history_observations:
+            return False
+
+        if str(int(track.cls)) not in CLASSES:
+            return False
+
+        if any(x < 0 for x in track.history_observations[-1]):
+            return False
+
+        return True
+
     @abstractmethod
     def update():
         pass
@@ -189,14 +201,11 @@ class TracksExporter(ABC):
 class DeepOCSORTTracksExporter(TracksExporter):
     def update(self, frame_id):
         for tr in self.tracker.active_tracks:
-            if not tr.history_observations:
-                return
-
-            if str(int(tr.cls)) not in CLASSES:
+            if not self._is_track_valid(tr):
                 continue
 
             tracking_record = TrackRecord(
-                tr.cls, tr.conf, tr.history_observations[-1], frame_id, tr.id
+                tr.cls, tr.conf, deepcopy(tr.history_observations[-1]), frame_id, tr.id
             )
             self.tracking_records.append(tracking_record)
 
@@ -204,11 +213,11 @@ class DeepOCSORTTracksExporter(TracksExporter):
 class BoTSORTTracksExporter(TracksExporter):
     def update(self, frame_id):
         for tr in self.tracker.active_tracks:
-            if not tr.history_observations:
-                return
+            if not self._is_track_valid(tr):
+                continue
 
             tracking_record = TrackRecord(
-                tr.cls, tr.conf, tr.history_observations[-1], frame_id, tr.id
+                tr.cls, tr.conf, deepcopy(tr.history_observations[-1]), frame_id, tr.id
             )
             self.tracking_records.append(tracking_record)
 
@@ -216,11 +225,11 @@ class BoTSORTTracksExporter(TracksExporter):
 class SMILETrackTracksExporter(TracksExporter):
     def update(self, frame_id):
         for tr in self.tracker.tracked_stracks:
-            if not tr.history_observations:
-                return
+            if not self._is_track_valid(tr):
+                continue
 
             bbox = [float(obs) for obs in tr.history_observations[-1]]
             tracking_record = TrackRecord(
-                tr.cls, float(tr.score), bbox, frame_id, tr.track_id
+                tr.cls, float(tr.score), deepcopy(bbox), frame_id, tr.track_id
             )
             self.tracking_records.append(tracking_record)

@@ -693,7 +693,8 @@ class DummyViewModel(
             askopenfilename(
                 title="Load file",
                 filetypes=[
-                    ("track and video files", SUPPORTED_VIDEO_FILE_TYPES + ["*.ottrk"]),
+                    ("video file", SUPPORTED_VIDEO_FILE_TYPES),
+                    ("track file", "*.ottrk"),
                 ],
             )
         )
@@ -720,8 +721,8 @@ class DummyViewModel(
             askopenfilename(
                 title="Load sections file",
                 filetypes=[
-                    (f"{OTFLOW} file", f"*.{OTFLOW}"),
                     (f"{OTCONFIG} file", f"*.{OTCONFIG}"),
+                    (f"{OTFLOW} file", f"*.{OTFLOW}"),
                 ],
                 defaultextension=f".{OTFLOW}",
             )

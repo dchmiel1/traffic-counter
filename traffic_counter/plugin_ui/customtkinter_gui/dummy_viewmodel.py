@@ -957,7 +957,7 @@ class DummyViewModel(
         for section in self.get_all_sections():
             new_coordinates = [
                 self._to_coordinate((coordinate.x * factor, coordinate.y * factor))
-                for coordinate in section.get_coordinates()
+                for coordinate in section.get_real_coordinates()
             ]
             section.update_coordinates(new_coordinates)
 
@@ -1690,12 +1690,13 @@ class DummyViewModel(
     def set_analysis_frame(self, frame: AbstractFrame) -> None:
         self._frame_analysis = frame
 
-    def handle_processed_data(self, ottrk, video_path: str, processed_video_path: str | None):
+    def handle_processed_data(
+        self, ottrk, video_path: str, processed_video_path: str | None
+    ):
         ottrk_path = self.save_ottrk(video_path, ottrk)
         self._application.add_tracks_of_files(track_files=[ottrk_path])
         if processed_video_path:
             self._video_player.update_selected_items([processed_video_path])
-
 
     def save_ottrk(self, video_path: Path, ottrk):
         filename = str(video_path).rsplit(".")[0]

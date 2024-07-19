@@ -67,7 +67,7 @@ class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
     def on_window_resize(self, event):
         diff = abs(self.canvas_background._current_image.width() - self.winfo_width())
         if self._current_image and diff > 20:
-            factor = self.winfo_width() / self.canvas_background._current_image.width()
+            factor = self.winfo_width() / self._current_image.width()
             self._viewmodel.update_sections_canvas_coordinates(factor)
             self.add_image(DisplayableImage(self._current_image), layer="background")
 
@@ -83,6 +83,8 @@ class FrameCanvas(AbstractFrameCanvas, EmbeddedCTkFrame):
     def update_background(self, image: TrackImage) -> None:
         self._current_image = image
         self.add_image(DisplayableImage(image), layer="background")
+        factor = self.winfo_width() / self._current_image.width()
+        self._viewmodel.update_sections_canvas_coordinates(factor)
 
     def resize_image(self, image: DisplayableImage):
         image_width = self.winfo_width()

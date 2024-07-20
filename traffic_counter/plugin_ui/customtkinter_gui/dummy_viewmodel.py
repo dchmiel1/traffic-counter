@@ -560,17 +560,18 @@ class DummyViewModel(
         self._load_otconfig(otconfig_file)
 
     def _load_otconfig(self, otconfig_file: Path) -> None:
-        proceed = InfoBox(
-            message=(
-                "This will load a stored configuration from file. \n"
-                "All configured sections, flows and videos will be removed before "
-                "loading."
-            ),
-            initial_position=self._get_window_position(),
-            show_cancel=True,
-        )
-        if proceed.canceled:
-            return
+        if self._selected_videos:
+            proceed = InfoBox(
+                message=(
+                    "This will load a stored configuration from file. \n"
+                    "All configured sections, flows and videos will be removed before "
+                    "loading."
+                ),
+                initial_position=self._get_window_position(),
+                show_cancel=True,
+            )
+            if proceed.canceled:
+                return
         logger().info(f"{OTCONFIG} file to load: {otconfig_file}")
         self._application.load_otconfig(file=Path(otconfig_file))
         self._show_current_project()

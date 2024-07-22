@@ -1616,6 +1616,8 @@ class DummyViewModel(
                 defaultextension=export_formats[default_format],
                 initialfile="counts",
             )
+            if not export_file:
+                return
             export_specification = CountingSpecificationDto(
                 # interval_in_minutes=export_values[INTERVAL],
                 # start=export_values[START],

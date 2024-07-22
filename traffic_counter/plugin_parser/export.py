@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Iterable
 
+import xlsxwriter
 from pandas import DataFrame
 
 from traffic_counter.application.analysis.traffic_counting import (
@@ -84,10 +85,73 @@ class CsvExport(Exporter):
         return path
 
 
+class ODMatrixExporter(Exporter):
+    def __init__(self, output_file):
+        self._output_file = output_file
+
+    def export(self, counts: Count) -> None:
+        logger().info(f"Exporting counts to {self._output_file}")
+        origins, destinations, counts = self.__create_records(counts)
+        if len(origins) == 0 or len(destinations) == 0:
+            logger().info("Nothing to count.")
+            return
+        self._to_xlsx(origins, destinations, counts)
+        logger().info(f"Counts saved at {self._output_file}")
+
+    def _to_xlsx(self, origins: list, destinations: list, counts: list[list]):
+        workbook = xlsxwriter.Workbook(self.__create_path())
+        worksheet = workbook.add_worksheet()
+        worksheet.write(0, 0, "O\D")
+
+        for i, o in enumerate(origins):
+            worksheet.write(i + 1, 0, o)
+        for j, d in enumerate(destinations):
+            worksheet.write(0, j + 1, d)
+
+        for i in range(len(origins)):
+            for j in range(len(destinations)):
+                worksheet.write(i + 1, j + 1, counts[i][j])
+        workbook.close()
+
+    @staticmethod
+    def __create_records(counts: Count) -> DataFrame:
+        transformed = counts.to_dict()
+        origins = []
+        destinations = []
+        matrix = [
+            [0 for _ in range(len(transformed.keys()))]
+            for _ in range(len(transformed.keys()))
+        ]
+        for key, value in transformed.items():
+            result_dict: dict = key.as_dict()
+            o = result_dict["from section"]
+            d = result_dict["to section"]
+            if o not in origins:
+                origins.append(o)
+            if d not in destinations:
+                destinations.append(d)
+            matrix[origins.index(o)][destinations.index(d)] += value
+        return origins, destinations, matrix
+
+    def __create_path(self) -> Path:
+        fixed_file_ending = (
+            self._output_file
+            if self._output_file.lower().endswith(".xlsx")
+            else self._output_file + ".xlsx"
+        )
+        path = Path(fixed_file_ending)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return path
+
+
+
 class SimpleExporterFactory(ExporterFactory):
     def __init__(self) -> None:
         self._formats = {
-            ExportFormat("CSV", ".csv"): lambda output_file: CsvExport(output_file)
+            ExportFormat("CSV", ".csv"): lambda output_file: CsvExport(output_file),
+            ExportFormat("XLSX", ".xlsx"): lambda output_file: ODMatrixExporter(
+                output_file
+            ),
         }
         self._factories = {
             format.name: factory for format, factory in self._formats.items()
@@ -139,7 +203,6 @@ class TagExploder:
                 )
                 tags.append(tag)
         return tags
-
 
 class FillZerosExporter(Exporter):
     def __init__(self, other: Exporter, tag_exploder: TagExploder) -> None:

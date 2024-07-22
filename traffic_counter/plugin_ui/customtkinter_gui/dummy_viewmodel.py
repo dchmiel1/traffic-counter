@@ -1612,7 +1612,7 @@ class DummyViewModel(
             # logger().debug(export_values)
             export_file = ask_for_save_file_name(
                 title="Save counts as",
-                filetypes=[(default_format, export_formats[default_format])],
+                filetypes=[(key, value) for key, value in export_formats.items()],
                 defaultextension=export_formats[default_format],
                 initialfile="counts",
             )
@@ -1623,7 +1623,7 @@ class DummyViewModel(
                 modes=modes,
                 # output_format=export_values[EXPORT_FORMAT],
                 # output_file=export_values[EXPORT_FILE],
-                output_format=default_format,
+                output_format=export_file.rsplit(".")[1].upper(),
                 output_file=export_file,
             )
             self._application.export_counts(export_specification)

@@ -762,11 +762,11 @@ class DummyViewModel(
         configuration_file = ask_for_save_file_path(
             title="Save configuration as",
             filetypes=[
-                (f"{OTFLOW} file", f"*.{OTFLOW}"),
                 (f"{OTCONFIG} file", f"*.{OTCONFIG}"),
+                (f"{OTFLOW} file", f"*.{OTFLOW}"),
             ],
-            defaultextension=f".{OTFLOW}",
-            initialfile=f"flows.{OTFLOW}",
+            defaultextension=f".{OTCONFIG}",
+            initialfile=f"config.{OTCONFIG}",
         )
         if not configuration_file.stem:
             return

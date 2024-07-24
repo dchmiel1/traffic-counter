@@ -6,6 +6,7 @@ from traffic_counter.plugin_video_processing.process import (
     BOT_SORT_NAME,
     CO_DETR_NAME,
     DEEP_OC_SORT_NAME,
+    DEEP_OC_SORT_PLUS_NAME,
     RT_DETR_NAME,
     SMILETRACK_NAME,
     YOLOV6_NAME,
@@ -53,14 +54,22 @@ class FrameSetAlgorithms(CTkFrame):
     def check_bot_sort(self):
         self.checkbox_smiletrack.deselect()
         self.checkbox_deep_oc_sort.deselect()
+        self.checkbox_deep_oc_sort_plus.deselect()
 
     def check_smiletrack(self):
         self.checkbox_botsort.deselect()
         self.checkbox_deep_oc_sort.deselect()
+        self.checkbox_deep_oc_sort_plus.deselect()
 
     def check_deep_oc_sort(self):
         self.checkbox_botsort.deselect()
         self.checkbox_smiletrack.deselect()
+        self.checkbox_deep_oc_sort_plus.deselect()
+
+    def check_deep_oc_sort_plus(self):
+        self.checkbox_botsort.deselect()
+        self.checkbox_smiletrack.deselect()
+        self.checkbox_deep_oc_sort.deselect()
 
     def _get_widgets(self) -> None:
         self.label_detector = CTkLabel(master=self, text="Detector")
@@ -93,6 +102,13 @@ class FrameSetAlgorithms(CTkFrame):
             command=self.check_deep_oc_sort,
             corner_radius=50,
         )
+        self.checkbox_deep_oc_sort_plus = CTkCheckBox(
+            master=self,
+            text=DEEP_OC_SORT_PLUS_NAME,
+            command=self.check_deep_oc_sort_plus,
+            corner_radius=50,
+        )
+
         self.det_checkboxes = [
             self.checkbox_yolo,
             self.checkbox_rtdetr,
@@ -103,6 +119,7 @@ class FrameSetAlgorithms(CTkFrame):
             self.checkbox_botsort,
             self.checkbox_smiletrack,
             self.checkbox_deep_oc_sort,
+            self.checkbox_deep_oc_sort_plus,
         ]
 
         self.save_vid_checkbox = CTkCheckBox(
@@ -116,7 +133,7 @@ class FrameSetAlgorithms(CTkFrame):
 
     def _place_widgets(self) -> None:
         self.grid_columnconfigure((0, 1), pad=PADX * 3)
-        self.grid_rowconfigure((4), minsize=20)
+        self.grid_rowconfigure((5), minsize=20)
         self.label_detector.grid(
             row=0, column=0, padx=PADX * 3, pady=PADY * 3, sticky=STICKY
         )
@@ -142,9 +159,12 @@ class FrameSetAlgorithms(CTkFrame):
         self.checkbox_deep_oc_sort.grid(
             row=3, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
         )
+        self.checkbox_deep_oc_sort_plus.grid(
+            row=4, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
+        )
 
         self.save_vid_checkbox.grid(
-            row=5, column=0, padx=PADX , pady=PADY*3, sticky=STICKY
+            row=6, column=0, padx=PADX, pady=PADY * 3, sticky=STICKY
         )
 
     def set_focus(self):

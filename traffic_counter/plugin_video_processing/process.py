@@ -17,6 +17,9 @@ from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter
 from traffic_counter.plugin_video_processing.detectors.rt_detr.rt_detr_adapter import (
     RTDETRAdapter as RTDETR,
 )
+from traffic_counter.plugin_video_processing.trackers.deep_ocsort_plus.deep_ocsort_plus import (
+    DeepOCSortPlus,
+)
 from traffic_counter.plugin_video_processing.trackers.smiletrack.smiletrack import (
     SMILEtrack,
 )
@@ -37,17 +40,24 @@ YOLOV6_NAME = "YOLOv6"
 DEEP_OC_SORT_NAME = "DeepOCSORT"
 BOT_SORT_NAME = "BoT-SORT"
 SMILETRACK_NAME = "SmileTrack"
+DEEP_OC_SORT_PLUS_NAME = "DeepOCSORTPlus"
 
-detectors = {CO_DETR_NAME: CODETR, RT_DETR_NAME: RTDETR, YOLOV6_NAME: YOLOv6}
+detectors = {
+    CO_DETR_NAME: CODETR,
+    RT_DETR_NAME: RTDETR,
+    YOLOV6_NAME: YOLOv6,
+}
 trackers = {
     DEEP_OC_SORT_NAME: DeepOCSORT,
     BOT_SORT_NAME: BoTSORT,
     SMILETRACK_NAME: SMILEtrack,
+    DEEP_OC_SORT_PLUS_NAME: DeepOCSortPlus,
 }
 results_exporter = {
     DEEP_OC_SORT_NAME: DeepOCSORTTracksExporter,
     BOT_SORT_NAME: BoTSORTTracksExporter,
     SMILETRACK_NAME: SMILETrackTracksExporter,
+    DEEP_OC_SORT_PLUS_NAME: DeepOCSORTTracksExporter,
 }
 
 

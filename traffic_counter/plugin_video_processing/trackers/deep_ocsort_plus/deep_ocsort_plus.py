@@ -200,7 +200,15 @@ class KalmanBoxTracker(object):
         self.last_stats = deque([], maxlen=3)
         self.last_valid_stats = deque([], maxlen=3)
         self.score = deque([], maxlen=3)
+        self.diffs = deque([], maxlen=3)
 
+    @property
+    def last_width(self):
+        return self.last_stats[-1][0]
+
+    @property
+    def last_height(self):
+        return self.last_stats[-1][1]
 
     def mean_stats(self, last_stats):
         width = [stats[0] for stats in last_stats]
@@ -210,18 +218,18 @@ class KalmanBoxTracker(object):
 
         return mean(width), mean(height), mean(vel_x), mean(vel_y)
 
+    def sum_diffs(self, diffs):
+        diff_x = [diff[0] for diff in diffs]
+        diff_y = [diff[1] for diff in diffs]
+
+        return sum(diff_x), sum(diff_y)
+
 
     def update_stats(self, det):
         try:
             mean_width, mean_height, mean_vel_x, mean_vel_y = self.mean_stats(self.last_stats)
         except StatisticsError:
             return
-
-        c = math.sqrt(mean_vel_y**2 + mean_vel_x **2)
-        if c == 0:
-            c = 1
-        sin = mean_vel_y / c
-        cos = mean_vel_x / c
     
         width = det[2] - det[0]
         height = det[3] - det[1]
@@ -235,35 +243,53 @@ class KalmanBoxTracker(object):
         y_center_diff = (det[3] + det[1]) / 2 - (last_det[3] + last_det[1]) / 2
 
         score = 0
-        if mean_width > width and x_center_diff * mean_vel_x > 0:
-            score += abs(width - mean_width) * x_factor + abs(x_center_diff - mean_vel_x) * abs(cos)* x_factor
+        if mean_width > width:
+            score += (abs(width - mean_width) + abs(x_center_diff - mean_vel_x)) * x_factor
 
-        if mean_height > height and y_center_diff * mean_vel_y > 0:
-            score += abs(height - mean_height) * y_factor + abs(y_center_diff - mean_vel_y) * abs(sin) * y_factor
+        if mean_height > height:
+            score += (abs(height - mean_height) + abs(y_center_diff - mean_vel_y)) * y_factor
+
 
         self.score.append(score)
         if score < 2:
             self.last_valid_stats.append((width, height, float(self.kf.x[4]), float(self.kf.x[5])))
+        else:
+            try:
+                _, _, valid_mean_vel_x, valid_mean_vel_y = self.mean_stats(self.last_valid_stats)
+            except StatisticsError:
+                return
+
+            self.diffs.append((x_center_diff - valid_mean_vel_x, y_center_diff - valid_mean_vel_y))
     
     def modify(self):
         if sum(self.score) < 5:
             return None
 
-        valid_mean_width, valid_mean_height, valid_mean_vel_x, valid_mean_vel_y = self.mean_stats(self.last_valid_stats)
+        try:
+            valid_mean_width, valid_mean_height, _, _ = self.mean_stats(self.last_valid_stats)
+        except StatisticsError:
+            return None
 
+        diffs = self.sum_diffs(self.diffs)
         det = self.last_observation
-        new_width = valid_mean_width - abs(valid_mean_vel_x) * 0.2
-        new_height = valid_mean_height - abs(valid_mean_vel_y)* 0.2
+        x_factor = 3* diffs[0] / self.last_width
+        y_factor = 3* diffs[1] / self.last_height
+        # x_factor = diffs[0] / math.sqrt(diffs[0] ** 2 + diffs[1] ** 2)
+        # y_factor = diffs[1] / math.sqrt(diffs[0] ** 2 + diffs[1] ** 2)
 
-        if valid_mean_vel_x > 0:
-            det[2] = det[0] + new_width
-        if valid_mean_vel_x < 0:
-            det[0] = det[2] - new_width
+        if diffs[0] < 0:
+            det[2] = det[0] + max(self.last_width, valid_mean_width * min(abs(x_factor), 0.9))
+            det[0] = det[2] - self.last_width * 1.1
+        else:
+            det[0] = det[2] - max(self.last_width, valid_mean_width * min(abs(x_factor), 0.9))
+            det[2] = det[0] + self.last_width * 1.1
         
-        if valid_mean_vel_y > 0:
-            det[3] = det[1] + new_height
-        if valid_mean_vel_y < 0:
-            det[1] = det[3] - new_height
+        if diffs[1] < 0:
+            det[3] = det[1] + max(self.last_height, valid_mean_height * min(abs(y_factor), 0.9))
+            det[1] = det[3] - self.last_height * 1.1
+        else:
+            det[1] = det[3] -  max(self.last_height, valid_mean_height * min(abs(y_factor), 0.9))
+            det[3] = det[1] + self.last_height * 1.1
 
         self.score.clear()
         return self.bbox_to_z_func(det)

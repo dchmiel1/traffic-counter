@@ -166,7 +166,7 @@ class FrameContent(CTkFrame):
         self.selected_video = item_ids[0]
         track_files = self._viewmodel.get_all_track_files()
         for track_file in track_files:
-            if str(track_file).rsplit(".")[0] == self.selected_video.rsplit(".")[0]:
+            if str(track_file).startswith(self.selected_video.rsplit(".")[0] + "_"):
                 self.show_widgets(True)
                 return
         self.show_widgets(False)

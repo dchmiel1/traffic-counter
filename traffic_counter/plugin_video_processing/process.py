@@ -104,7 +104,7 @@ def initialize_video_writer(vid_reader, filename):
 
 
 def process(
-    video_path: str,
+    video_path: Path,
     detector_name: str,
     tracker_name: str,
     progress_bar: VideoProcessingProgressBarWindow,
@@ -119,11 +119,10 @@ def process(
     vid_reader = cv2.VideoCapture(video_path)
     frame_count = vid_reader.get(cv2.CAP_PROP_FRAME_COUNT)
 
+    base_path = f"{str(video_path).rsplit('.', 1)[0]}_{detector_name}_{tracker_name}"
+
     if save_processed_video:
-        processed_video_filename = "_processed.".join(str(video_path).rsplit(".", 1))
-        vid_writer = initialize_video_writer(vid_reader, processed_video_filename)
-    else:
-        processed_video_filename = None
+        vid_writer = initialize_video_writer(vid_reader, base_path + ".mp4")
 
     frame_id = 0
     while True:
@@ -146,4 +145,4 @@ def process(
     vid_reader.release()
     if save_processed_video:
         vid_writer.release()
-    data_handler(exporter.ottrk, str(video_path), processed_video_filename)
+    data_handler(exporter.ottrk, base_path, save_processed_video)

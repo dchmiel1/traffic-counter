@@ -707,6 +707,7 @@ class DummyViewModel(
 
         elif file.suffix == ".ottrk":
             self.load_tracks(file)
+            self._video_player.update_items()
         else:
             self.add_video(file)
 
@@ -1695,17 +1696,16 @@ class DummyViewModel(
         self._frame_analysis = frame
 
     def handle_processed_data(
-        self, ottrk, video_path: str, processed_video_path: str | None
+        self, ottrk, base_path: str, video_saved: bool
     ):
-        ottrk_path = self.save_ottrk(video_path, ottrk)
+        ottrk_path = self.save_ottrk(base_path, ottrk)
         self._application.add_tracks_of_files(track_files=[ottrk_path])
-        if processed_video_path:
-            self._video_player.update_selected_items([processed_video_path])
+        if video_saved:
+            self._video_player.update_selected_items([base_path + ".mp4"])
 
-    def save_ottrk(self, video_path: Path, ottrk):
-        filename = str(video_path).rsplit(".")[0]
-        write_json_bz2(ottrk, filename + ".ottrk")
-        return Path(filename + ".ottrk")
+    def save_ottrk(self, base_path: str, ottrk):
+        write_json_bz2(ottrk, base_path + ".ottrk")
+        return Path(base_path + ".ottrk")
 
     def process_video(self) -> None:
         try:

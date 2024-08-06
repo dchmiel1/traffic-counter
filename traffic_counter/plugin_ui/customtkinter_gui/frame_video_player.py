@@ -127,10 +127,6 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         self._activate_widgets()
         self.introduce_to_viewmodel()
 
-    @property
-    def _processed_video(self):
-        return "_processed.".join(str(self.video_file).rsplit(".", 1))
-
     def introduce_to_viewmodel(self) -> None:
         self._viewmodel.set_video_player(self)
 
@@ -188,13 +184,14 @@ class FrameVideoPlayer(EmbeddedCTkFrame):
         self.progress_slider.set(1)
 
     def update_items(self) -> None:
-        pass
+        track_file = next(iter(self._viewmodel.get_all_track_files()))
+        processed_video = str(track_file).replace(".ottrk", ".mp4")
+        if os.path.isfile(processed_video):
+            self.update_selected_items([processed_video])
 
     def update_selected_items(self, item_ids: list[str]):
         if len(item_ids) == 0:
             return
 
         self.video_file = item_ids[0].replace("\\", "/")
-        if os.path.isfile(self._processed_video):
-            self.video_file = self._processed_video
         self._open_video()

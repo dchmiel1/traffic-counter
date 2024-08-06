@@ -274,7 +274,7 @@ class OTAnalyticsGui:
         set_appearance_mode("System")
         set_default_color_theme("blue")
 
-        self._app.title("OTAnalytics")
+        self._app.title("Traffic Counter")
         self._app.minsize(width=1024, height=768)
 
         self._get_widgets()

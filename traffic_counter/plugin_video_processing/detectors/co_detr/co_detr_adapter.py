@@ -1,10 +1,13 @@
 import numpy as np
 
-from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import DetectorAdapter
+from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
+    DetectorAdapter,
+)
 from traffic_counter.plugin_video_processing.detectors.co_detr.mmdet.apis import (
     inference_detector,
     init_detector as init_codetr_detector,
 )
+from traffic_counter.plugin_video_processing.tracks_exporter import CLASSES
 
 
 class CODETRAdapter(DetectorAdapter):
@@ -26,6 +29,8 @@ class CODETRAdapter(DetectorAdapter):
     def _convert_dets(self, dets):
         converted_dets = []
         for class_id, class_dets in enumerate(dets):
+            if str(class_id) not in CLASSES:
+                continue
             for det in class_dets:
                 converted_det = np.append([det[0:5]], [class_id])
                 converted_dets.append(converted_det)

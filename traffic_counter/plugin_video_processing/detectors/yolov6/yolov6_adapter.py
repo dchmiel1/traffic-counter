@@ -1,9 +1,12 @@
 import numpy as np
 
-from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import DetectorAdapter
+from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
+    DetectorAdapter,
+)
 from traffic_counter.plugin_video_processing.detectors.yolov6.yolov6.core.inferer import (
     Inferer as YOLOv6Inferer,
 )
+from traffic_counter.plugin_video_processing.tracks_exporter import CLASSES
 
 
 class YOLOv6Adapter(DetectorAdapter):
@@ -34,6 +37,11 @@ class YOLOv6Adapter(DetectorAdapter):
 
     def detect(self, img):
         dets = self.detector.infer_on_image(
-            img, self.conf_thres, self.iou_thres, None, self.agnostic_nms, 1000
+            img,
+            self.conf_thres,
+            self.iou_thres,
+            [int(key) for key in CLASSES.keys()],
+            self.agnostic_nms,
+            1000,
         )
         return self._convert_dets(dets)

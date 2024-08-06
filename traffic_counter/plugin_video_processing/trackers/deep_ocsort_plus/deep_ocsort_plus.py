@@ -197,37 +197,32 @@ class KalmanBoxTracker(object):
 
         self.frozen = False
 
-        self.last_stats = deque([], maxlen=3)
-        self.last_valid_stats = deque([], maxlen=3)
-        self.score = deque([], maxlen=3)
-        self.diffs = deque([], maxlen=3)
+        self.last_is_disappearing = deque([], maxlen=5)
+        self.last_size = deque([], maxlen=3)
+        self.last_vel = deque([], maxlen=3)
+        self.last_valid_x_params = deque([], maxlen=3)
+        self.last_valid_y_params = deque([], maxlen=3)
+        self.stay = False
 
-    @property
-    def last_width(self):
-        return self.last_stats[-1][0]
+    def mean_valid_params(self, last_valid_params):
+        size = [size[0] for size in last_valid_params]
+        vel = [vels[1] for vels in last_valid_params]
+        return mean(size), mean(vel)
 
-    @property
-    def last_height(self):
-        return self.last_stats[-1][1]
+    def mean_size(self):
+        width = [size[0] for size in self.last_size]
+        height = [size[1] for size in self.last_size]
+        return mean(width), mean(height)
 
-    def mean_stats(self, last_stats):
-        width = [stats[0] for stats in last_stats]
-        height = [stats[1] for stats in last_stats]
-        vel_x = [stats[2] for stats in last_stats]
-        vel_y = [stats[3] for stats in last_stats]
+    def mean_vel(self):
+        vel_x = [vels[0] for vels in self.last_vel]
+        vel_y = [vels[1] for vels in self.last_vel]
+        return mean(vel_x), mean(vel_y)
 
-        return mean(width), mean(height), mean(vel_x), mean(vel_y)
-
-    def sum_diffs(self, diffs):
-        diff_x = [diff[0] for diff in diffs]
-        diff_y = [diff[1] for diff in diffs]
-
-        return sum(diff_x), sum(diff_y)
-
-
-    def update_stats(self, det):
+    def check_if_disappearing(self, det):
         try:
-            mean_width, mean_height, mean_vel_x, mean_vel_y = self.mean_stats(self.last_stats)
+            mean_width, mean_height = self.mean_size()
+            mean_vel_x, mean_vel_y = self.mean_vel()
         except StatisticsError:
             return
     
@@ -235,63 +230,75 @@ class KalmanBoxTracker(object):
         height = det[3] - det[1]
 
         last_det = self.last_observation
-    
-        x_factor = math.sqrt(mean_vel_x if mean_vel_x > 1 else 1) * math.sqrt(mean_width) / 100
-        y_factor = math.sqrt(mean_vel_y if mean_vel_y > 1 else 1) * math.sqrt(mean_height) / 100
 
-        x_center_diff = (det[2] + det[0]) / 2 - (last_det[2] + last_det[0]) / 2
-        y_center_diff = (det[3] + det[1]) / 2 - (last_det[3] + last_det[1]) / 2
+        x_center, y_center = (det[2] + det[0]) / 2, (det[3] + det[1]) / 2
+        x_last_center, y_last_center = (last_det[2] + last_det[0]) / 2, (last_det[3] + last_det[1]) / 2
 
-        score = 0
-        if mean_width > width:
-            score += (abs(width - mean_width) + abs(x_center_diff - mean_vel_x)) * x_factor
+        def is_slower_than_expected(curr_center, last_center, vel):
+            return (curr_center - last_center  - vel) * vel < 0
 
-        if mean_height > height:
-            score += (abs(height - mean_height) + abs(y_center_diff - mean_vel_y)) * y_factor
+        is_disappearing = False
+        if (mean_width > width and is_slower_than_expected(x_center, x_last_center, mean_vel_x)):
+            is_disappearing = True
 
+        if (mean_height > height and is_slower_than_expected(y_center, y_last_center, mean_vel_y)):
+            is_disappearing = True
 
-        self.score.append(score)
-        if score < 2:
-            self.last_valid_stats.append((width, height, float(self.kf.x[4]), float(self.kf.x[5])))
-        else:
-            try:
-                _, _, valid_mean_vel_x, valid_mean_vel_y = self.mean_stats(self.last_valid_stats)
-            except StatisticsError:
-                return
+        self.last_is_disappearing.append(is_disappearing)
 
-            self.diffs.append((x_center_diff - valid_mean_vel_x, y_center_diff - valid_mean_vel_y))
-    
-    def modify(self):
-        if sum(self.score) < 5:
-            return None
+        if is_disappearing == False and mean_width <= width:
+            self.last_valid_x_params.append((width, float(self.kf.x[4])))
+        if is_disappearing == False and mean_height <= height:
+            self.last_valid_y_params.append((height, float(self.kf.x[5])))
 
+    def modify_prediction(self):
         try:
-            valid_mean_width, valid_mean_height, _, _ = self.mean_stats(self.last_valid_stats)
+            valid_mean_width, valid_mean_vel_x = self.mean_valid_params(self.last_valid_x_params)
+            valid_mean_height, valid_mean_vel_y = self.mean_valid_params(self.last_valid_y_params)
         except StatisticsError:
             return None
 
-        diffs = self.sum_diffs(self.diffs)
+        mean_width, mean_height = self.mean_size()
+
+        is_right = valid_mean_vel_x > 0
+        is_down = valid_mean_vel_y > 0
+
+######## Remove it? Handling objects without velocity out of scope?
         det = self.last_observation
-        x_factor = 3* diffs[0] / self.last_width
-        y_factor = 3* diffs[1] / self.last_height
-        # x_factor = diffs[0] / math.sqrt(diffs[0] ** 2 + diffs[1] ** 2)
-        # y_factor = diffs[1] / math.sqrt(diffs[0] ** 2 + diffs[1] ** 2)
-
-        if diffs[0] < 0:
-            det[2] = det[0] + max(self.last_width, valid_mean_width * min(abs(x_factor), 0.9))
-            det[0] = det[2] - self.last_width * 1.1
+        if abs(valid_mean_vel_x) < 1 and abs(valid_mean_vel_y) < 1:
+            self.stay = True
+            valid_mean_width *=1.3
+            valid_mean_height *= 1.3
+            is_right = self.kf.x[4] < 0
+            is_down = self.kf.x[5] < 0
+            self.kf.x[4] = 0
+            self.kf.x[5] = 0
+            self.last_observation = det
         else:
-            det[0] = det[2] - max(self.last_width, valid_mean_width * min(abs(x_factor), 0.9))
-            det[2] = det[0] + self.last_width * 1.1
+            if abs(valid_mean_vel_x) < 1:
+                valid_mean_width = mean_width * 1.1
+                is_right = self.kf.x[4] < 0
         
-        if diffs[1] < 0:
-            det[3] = det[1] + max(self.last_height, valid_mean_height * min(abs(y_factor), 0.9))
-            det[1] = det[3] - self.last_height * 1.1
-        else:
-            det[1] = det[3] -  max(self.last_height, valid_mean_height * min(abs(y_factor), 0.9))
-            det[3] = det[1] + self.last_height * 1.1
+            if abs(valid_mean_vel_y) < 1:
+                valid_mean_height = mean_height * 1.1
+                is_down = self.kf.x[5] < 0
+########
 
-        self.score.clear()
+        if is_right:
+            det[2] = det[0] + valid_mean_width * 0.9
+            det[0] = det[2] - mean_width
+        else:
+            det[0] = det[2] - valid_mean_width * 0.9
+            det[2] = det[0] + mean_width
+
+        if is_down:
+            det[3] = det[1] + valid_mean_height * 0.9
+            det[1] = det[3] - mean_height
+        else:
+            det[1] = det[3] - valid_mean_height * 0.9
+            det[3] = det[1] + mean_height
+
+        self.last_is_disappearing.clear()
         return self.bbox_to_z_func(det)
 
 
@@ -301,7 +308,8 @@ class KalmanBoxTracker(object):
         """
 
         if det is not None:
-            self.update_stats(det)
+            self.stay = False
+            self.check_if_disappearing(det)
             bbox = det[0:5]
             self.conf = det[4]
             self.cls = det[5]
@@ -336,10 +344,19 @@ class KalmanBoxTracker(object):
                 self.kf.update(self.bbox_to_z_func(bbox), R=R)
             else:
                 self.kf.update(self.bbox_to_z_func(bbox))
-            self.last_stats.append((det[2] - det[0], det[3]- det[1], float(self.kf.x[4]), float(self.kf.x[5])))
+            self.last_size.append((det[2] - det[0], det[3]- det[1]))
+            self.last_vel.append((float(self.kf.x[4]), float(self.kf.x[5])))
         else:
-            det = self.modify()
-            self.kf.update(det)
+        #######
+            if self.stay:
+                self.kf.x[4] = 0
+                self.kf.x[5] = 0
+                self.kf.update(self.bbox_to_z_func(self.last_observation))
+            else:
+        ########
+                if sum(self.last_is_disappearing) < 3:
+                    det = self.modify_prediction()
+                self.kf.update(det)
             self.frozen = True
 
     def update_emb(self, emb, alpha=0.9):

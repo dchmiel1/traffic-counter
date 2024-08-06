@@ -2,6 +2,7 @@ from typing import Callable
 from pathlib import Path
 
 import cv2
+import numpy as np
 from boxmot import BoTSORT, DeepOCSORT
 from boxmot.trackers.basetracker import BaseTracker
 
@@ -100,6 +101,43 @@ def initialize_video_writer(vid_reader, filename):
     return cv2.VideoWriter(filename, fourcc, int(fps), (int(width), int(height)))
 
 
+# this function is a copy of boxmot.trackers.basetracker.BaseTracker.plot_results method
+def plot_results(tracker, img: np.ndarray, show_trajectories: bool) -> np.ndarray:
+    """
+    Visualizes the trajectories of all active tracks on the image. For each track,
+    it draws the latest bounding box and the path of movement if the history of
+    observations is longer than two. This helps in understanding the movement patterns
+    of each tracked object.
+
+    Parameters:
+    - img (np.ndarray): The image array on which to draw the trajectories and bounding boxes.
+
+    Returns:
+    - np.ndarray: The image array with trajectories and bounding boxes of all active tracks.
+    """
+
+    # if values in dict
+    if tracker.per_class_active_tracks:
+        for k in tracker.per_class_active_tracks.keys():
+            active_tracks = tracker.per_class_active_tracks[k]
+            for a in active_tracks:
+                if a.history_observations:
+                    if len(a.history_observations) > 2:
+                        box = a.history_observations[-1]
+                        img = tracker.plot_box_on_img(img, box, a.conf, a.cls, a.id)
+                        if show_trajectories:
+                            img = tracker.plot_trackers_trajectories(img, a.history_observations, a.id)
+    else:
+        for a in tracker.active_tracks:
+            if a.history_observations:
+                if len(a.history_observations) > 2 and a.frozen == False:
+                    box = a.history_observations[-1]
+                    img = tracker.plot_box_on_img(img, box, a.conf, a.cls, a.id)
+                    if show_trajectories:
+                        img = tracker.plot_trackers_trajectories(img, a.history_observations, a.id)
+
+    return img
+
 def process(
     video_path: str,
     detector_name: str,
@@ -134,7 +172,7 @@ def process(
         exporter.update(frame_id)
 
         if save_processed_video:
-            tracker.plot_results(im, show_trajectories=True)
+            plot_results(tracker, im, show_trajectories=True)
             vid_writer.write(im)
 
         print(frame_id)

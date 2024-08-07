@@ -10,7 +10,7 @@ from pathlib import Path
 import cv2
 
 CLASSES = {
-    "0": "person",
+    # "0": "person",
     "1": "bicycle",
     "2": "car",
     "3": "motorcycle",

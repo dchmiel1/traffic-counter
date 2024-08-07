@@ -230,6 +230,8 @@ class DummyViewModel(
         self._video_player: Optional[AbstractTreeviewInterface]
         self._frame_content: Optional[AbstractTreeviewInterface]
         self._new_section: dict = {}
+        self._detector = None
+        self._tracker = None
 
     def notify_videos(self, videos: list[Video]) -> None:
         if self._treeview_videos is None:
@@ -1611,11 +1613,14 @@ class DummyViewModel(
             #     viewmodel=self,
             # ).get_data()
             # logger().debug(export_values)
+            initial_file = f"{Path(self._selected_videos[0]).name.rsplit('.', 1)[0]}"
+            if self._detector is not None and self._tracker is not None:
+                initial_file += f"_{self._detector}_{self._tracker}"
             export_file = ask_for_save_file_name(
                 title="Save counts as",
                 filetypes=[(key, value) for key, value in export_formats.items()],
                 defaultextension=export_formats[default_format],
-                initialfile="counts",
+                initialfile=initial_file,
             )
             if not export_file:
                 return
@@ -1726,6 +1731,8 @@ class DummyViewModel(
             )
 
             logger().info(f"Processing video using {detector} detector and {tracker}")
+            self._detector = detector
+            self._tracker = tracker
             thread = Thread(
                 target=process,
                 args=(

@@ -197,6 +197,7 @@ def extract_hostname(name: str) -> str:
         FILE_NAME_PATTERN,
         name,
     )
+    return name
     if match:
         hostname: str = match.group(HOSTNAME)
         return hostname

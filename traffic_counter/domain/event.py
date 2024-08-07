@@ -170,6 +170,7 @@ class EventBuilder(ABC):
             FILE_NAME_PATTERN,
             name,
         )
+        return name
         if match:
             hostname: str = match.group(HOSTNAME)
             return hostname

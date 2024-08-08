@@ -20,7 +20,7 @@ from traffic_counter.plugin_video_processing.detectors.rt_detr.rt_detr_adapter i
 from traffic_counter.plugin_video_processing.trackers.deep_ocsort_plus.deep_ocsort_plus import (
     DeepOCSortPlus,
 )
-from traffic_counter.plugin_video_processing.trackers.smiletrack.smiletrack import (
+from traffic_counter.plugin_video_processing.trackers.smiletrack.mc_SMILEtrack import (
     SMILEtrack,
 )
 from traffic_counter.plugin_video_processing.trackers.plot_override import (

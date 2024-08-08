@@ -1,19 +1,15 @@
-import cv2 as cv
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import deque
 
-from . import matching
-from .gmc import GMC
-from .basetrack import BaseTrack, TrackState
-from .kalman_filter import KalmanFilter
-import hashlib
-import colorsys
-from boxmot.appearance.reid_auto_backend import ReidAutoBackend
+from tracker import matching
+from tracker.gmc import GMC
+from tracker.basetrack import BaseTrack, TrackState
+from tracker.kalman_filter import KalmanFilter
 
-# from fast_reid.fast_reid_interfece import FastReIDInterface
-from .SLM import load_model
-import torch
+from fast_reid.fast_reid_interfece import FastReIDInterface
+
 
 class STrack(BaseTrack):
     shared_kalman = KalmanFilter()
@@ -29,7 +25,6 @@ class STrack(BaseTrack):
         self.cls = -1
         self.cls_hist = []  # (cls id, freq)
         self.update_cls(cls, score)
-        self.history_observations = deque([], maxlen=50)
 
         self.score = score
         self.tracklet_len = 0
@@ -150,8 +145,6 @@ class STrack(BaseTrack):
         self.frame_id = frame_id
         self.tracklet_len += 1
 
-        self.history_observations.append(self.tlbr)
-
         new_tlwh = new_track.tlwh
 
         self.mean, self.covariance = self.kalman_filter.update(self.mean, self.covariance, self.tlwh_to_xywh(new_tlwh))
@@ -230,35 +223,10 @@ class STrack(BaseTrack):
 
     def __repr__(self):
         return 'OT_{}_({}-{})'.format(self.track_id, self.start_frame, self.end_frame)
-    
-def extract_image_patches(image, bboxes):
-    bboxes = np.round(bboxes).astype(int)     
-    patches = [image[box[1]:box[3], box[0]:box[2],:] for box in bboxes]    
-    #bboxes = clip_boxes(bboxes, image.shape)
-    return patches
 
-class SMILEtrack(object):
-    def __init__(
-        self,
-        model_weights,
-        device,
-        fp16,
-        per_class=False,
-        track_high_thresh: float = 0.5,
-        track_low_thresh: float = 0.1,
-        new_track_thresh: float = 0.6,
-        track_buffer: int = 30,
-        match_thresh: float = 0.8,
-        proximity_thresh: float = 0.5,
-        appearance_thresh: float = 0.25,
-        cmc_method: str = "sparseOptFlow",
-        name: str = "exp",
-        ablation: bool = False,
-        frame_rate=30,
-        fuse_first_associate: bool = False,
-        with_reid: bool = True,
-        mot20: bool = False
-    ):
+
+class BoTSORT(object):
+    def __init__(self, args, frame_rate=30):
 
         self.tracked_stracks = []  # type: list[STrack]
         self.lost_stracks = []  # type: list[STrack]
@@ -266,32 +234,24 @@ class SMILEtrack(object):
         BaseTrack.clear_count()
 
         self.frame_id = 0
+        self.args = args
 
-        self.track_high_thresh = track_high_thresh
-        self.track_low_thresh = track_low_thresh
-        self.new_track_thresh = new_track_thresh
-        self.with_reid = with_reid
-        self.mot20 = mot20
-        self.match_thresh = match_thresh
+        self.track_high_thresh = args.track_high_thresh
+        self.track_low_thresh = args.track_low_thresh
+        self.new_track_thresh = args.new_track_thresh
 
-        self.buffer_size = int(frame_rate / 30.0 * track_buffer)
+        self.buffer_size = int(frame_rate / 30.0 * args.track_buffer)
         self.max_time_lost = self.buffer_size
         self.kalman_filter = KalmanFilter()
 
         # ReID module
-        self.proximity_thresh = proximity_thresh
-        self.appearance_thresh = appearance_thresh
+        self.proximity_thresh = args.proximity_thresh
+        self.appearance_thresh = args.appearance_thresh
 
-        if self.with_reid:
-            #self.encoder = FastReIDInterface(args.fast_reid_config, args.fast_reid_weights, args.device)
-            rab = ReidAutoBackend(weights=model_weights, device=device, half=fp16)
-            self.encoder = rab.get_backend()
-            # self.encoder = load_model(self.weight_path)
-            # self.encoder = self.encoder.cuda()
-            # self.encoder = self.encoder.eval() 
-            # self.encoder = self.encoder.half() 
+        if args.with_reid:
+            self.encoder = FastReIDInterface(args.fast_reid_config, args.fast_reid_weights, args.device)
 
-        self.gmc = GMC(method=cmc_method, verbose=[name, ablation])
+        self.gmc = GMC(method=args.cmc_method, verbose=[args.name, args.ablation])
 
     def update(self, output_results, img):
         self.frame_id += 1
@@ -314,7 +274,7 @@ class SMILEtrack(object):
             features = output_results[lowest_inds]
 
             # Find high threshold detections
-            remain_inds = scores > self.track_high_thresh
+            remain_inds = scores > self.args.track_high_thresh
             dets = bboxes[remain_inds]
             scores_keep = scores[remain_inds]
             classes_keep = classes[remain_inds]
@@ -326,28 +286,14 @@ class SMILEtrack(object):
             dets = []
             scores_keep = []
             classes_keep = []
-    
+
         '''Extract embeddings '''
-        if self.with_reid:
-            
-            #features_keep = self.encoder.inference(img, dets)
-            
-            # set dets features
-            patches_det = extract_image_patches(img, dets)
-            features = torch.zeros((len(patches_det),128), dtype=torch.float64)
-            
-        
-            # for time in range(len(patches_det)):
-                # patches_det[time] = torch.tensor(patches_det[time]).cuda()
-            features_keep = self.encoder.get_features(dets, img)
-            
-            # features_keep = features.cpu().detach().numpy()
-            
-            
+        if self.args.with_reid:
+            features_keep = self.encoder.inference(img, dets)
 
         if len(dets) > 0:
             '''Detections'''
-            if self.with_reid:
+            if self.args.with_reid:
                 detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s, c, f) for
                               (tlbr, s, c, f) in zip(dets, scores_keep, classes_keep, features_keep)]
             else:
@@ -380,25 +326,15 @@ class SMILEtrack(object):
         ious_dists = matching.iou_distance(strack_pool, detections)
         ious_dists_mask = (ious_dists > self.proximity_thresh)
 
-        if not self.mot20:
+        if not self.args.mot20:
             ious_dists = matching.fuse_score(ious_dists, detections)
 
-        if self.with_reid:
-            
-            dists_iou = matching.iou_distance(strack_pool, detections)
-            dists_emb = matching.embedding_distance(strack_pool, detections)
-            dists_emb = matching.fuse_motion(self.kalman_filter, dists_emb, strack_pool, detections)
-            
-            if dists_emb.size != 0:
-                dists = matching.gate(dists_iou, dists_emb)
-            else:
-                dists = dists_iou
-                
-#             emb_dists = matching.embedding_distance(strack_pool, detections) / 2.0
-#             raw_emb_dists = emb_dists.copy()
-#             emb_dists[emb_dists > self.appearance_thresh] = 1.0
-#             emb_dists[ious_dists_mask] = 1.0
-#             dists = np.minimum(ious_dists, emb_dists)
+        if self.args.with_reid:
+            emb_dists = matching.embedding_distance(strack_pool, detections) / 2.0
+            raw_emb_dists = emb_dists.copy()
+            emb_dists[emb_dists > self.appearance_thresh] = 1.0
+            emb_dists[ious_dists_mask] = 1.0
+            dists = np.minimum(ious_dists, emb_dists)
 
             # Popular ReID method (JDE / FairMOT)
             # raw_emb_dists = matching.embedding_distance(strack_pool, detections)
@@ -411,7 +347,7 @@ class SMILEtrack(object):
         else:
             dists = ious_dists
 
-        matches, u_track, u_detection = matching.linear_assignment(dists, thresh=self.match_thresh)
+        matches, u_track, u_detection = matching.linear_assignment(dists, thresh=self.args.match_thresh)
 
         for itracked, idet in matches:
             track = strack_pool[itracked]
@@ -425,8 +361,8 @@ class SMILEtrack(object):
 
         ''' Step 3: Second association, with low score detection boxes'''
         if len(scores):
-            inds_high = scores < self.track_high_thresh
-            inds_low = scores > self.track_low_thresh
+            inds_high = scores < self.args.track_high_thresh
+            inds_low = scores > self.args.track_low_thresh
             inds_second = np.logical_and(inds_low, inds_high)
             dets_second = bboxes[inds_second]
             scores_second = scores[inds_second]
@@ -466,7 +402,7 @@ class SMILEtrack(object):
         '''Deal with unconfirmed tracks, usually tracks with only one beginning frame'''
         detections = [detections[i] for i in u_detection]
         dists = matching.iou_distance(unconfirmed, detections)
-        if not self.mot20:
+        if not self.args.mot20:
             dists = matching.fuse_score(dists, detections)
         matches, u_unconfirmed, u_detection = matching.linear_assignment(dists, thresh=0.7)
         for itracked, idet in matches:
@@ -508,141 +444,6 @@ class SMILEtrack(object):
 
         return output_stracks
 
-    per_class_active_tracks = {}
-
-    def id_to_color(self, id: int, saturation: float = 0.75, value: float = 0.95) -> tuple:
-        """
-        Generates a consistent unique BGR color for a given ID using hashing.
-
-        Parameters:
-        - id (int): Unique identifier for which to generate a color.
-        - saturation (float): Saturation value for the color in HSV space.
-        - value (float): Value (brightness) for the color in HSV space.
-
-        Returns:
-        - tuple: A tuple representing the BGR color.
-        """
-
-        # Hash the ID to get a consistent unique value
-        hash_object = hashlib.sha256(str(id).encode())
-        hash_digest = hash_object.hexdigest()
-        
-        # Convert the first few characters of the hash to an integer
-        # and map it to a value between 0 and 1 for the hue
-        hue = int(hash_digest[:8], 16) / 0xffffffff
-        
-        # Convert HSV to RGB
-        rgb = colorsys.hsv_to_rgb(hue, saturation, value)
-        
-        # Convert RGB from 0-1 range to 0-255 range and format as hexadecimal
-        rgb_255 = tuple(int(component * 255) for component in rgb)
-        hex_color = '#%02x%02x%02x' % rgb_255
-        # Strip the '#' character and convert the string to RGB integers
-        rgb = tuple(int(hex_color.strip('#')[i:i+2], 16) for i in (0, 2, 4))
-        
-        # Convert RGB to BGR for OpenCV
-        bgr = rgb[::-1]
-        
-        return bgr
-
-    def plot_box_on_img(self, img: np.ndarray, box: tuple, conf: float, cls: int, id: int) -> np.ndarray:
-        """
-        Draws a bounding box with ID, confidence, and class information on an image.
-
-        Parameters:
-        - img (np.ndarray): The image array to draw on.
-        - box (tuple): The bounding box coordinates as (x1, y1, x2, y2).
-        - conf (float): Confidence score of the detection.
-        - cls (int): Class ID of the detection.
-        - id (int): Unique identifier for the detection.
-
-        Returns:
-        - np.ndarray: The image array with the bounding box drawn on it.
-        """
-
-        thickness = 2
-        fontscale = 0.5
-
-        img = cv.rectangle(
-            img,
-            (int(box[0]), int(box[1])),
-            (int(box[2]), int(box[3])),
-            self.id_to_color(id),
-            thickness
-        )
-        img = cv.putText(
-            img,
-            f'id: {int(id)}, conf: {conf:.2f}, c: {int(cls)}',
-            (int(box[0]), int(box[1]) - 10),
-            cv.FONT_HERSHEY_SIMPLEX,
-            fontscale,
-            self.id_to_color(id),
-            thickness
-        )
-        return img
-
-    def plot_trackers_trajectories(self, img: np.ndarray, observations: list, id: int) -> np.ndarray:
-        """
-        Draws the trajectories of tracked objects based on historical observations. Each point
-        in the trajectory is represented by a circle, with the thickness increasing for more
-        recent observations to visualize the path of movement.
-
-        Parameters:
-        - img (np.ndarray): The image array on which to draw the trajectories.
-        - observations (list): A list of bounding box coordinates representing the historical
-        observations of a tracked object. Each observation is in the format (x1, y1, x2, y2).
-        - id (int): The unique identifier of the tracked object for color consistency in visualization.
-
-        Returns:
-        - np.ndarray: The image array with the trajectories drawn on it.
-        """
-        for i, box in enumerate(observations):
-            trajectory_thickness = int(np.sqrt(float (i + 1)) * 1.2)
-            img = cv.circle(
-                img,
-                (int((box[0] + box[2]) / 2),
-                int((box[1] + box[3]) / 2)), 
-                2,
-                color=self.id_to_color(int(id)),
-                thickness=trajectory_thickness
-            )
-        return img
-
-    def plot_results(self, img: np.ndarray, show_trajectories: bool) -> np.ndarray:
-        """
-        Visualizes the trajectories of all active tracks on the image. For each track,
-        it draws the latest bounding box and the path of movement if the history of
-        observations is longer than two. This helps in understanding the movement patterns
-        of each tracked object.
-
-        Parameters:
-        - img (np.ndarray): The image array on which to draw the trajectories and bounding boxes.
-
-        Returns:
-        - np.ndarray: The image array with trajectories and bounding boxes of all active tracks.
-        """
-
-        # if values in dict
-        if self.per_class_active_tracks:
-            for k in self.per_class_active_tracks.keys():
-                active_tracks = self.per_class_active_tracks[k]
-                for a in active_tracks:
-                    if a.history_observations:
-                        if len(a.history_observations) > 2:
-                            box = a.history_observations[-1]
-                            img = self.plot_box_on_img(img, box, a.score, a.cls, a.track_id)
-                            if show_trajectories:
-                                img = self.plot_trackers_trajectories(img, a.history_observations, a.track_id)
-        else:
-            for a in self.tracked_stracks:
-                if a.history_observations:
-                    if len(a.history_observations) > 2:
-                        box = a.history_observations[-1]
-                        img = self.plot_box_on_img(img, box, a.score, a.cls, a.track_id)
-                        if show_trajectories:
-                            img = self.plot_trackers_trajectories(img, a.history_observations, a.track_id)
-                
-        return img
 
 def joint_stracks(tlista, tlistb):
     exists = {}

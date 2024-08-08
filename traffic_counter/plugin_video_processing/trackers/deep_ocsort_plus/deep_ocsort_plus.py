@@ -202,7 +202,9 @@ class KalmanBoxTracker(object):
         self.last_vel = deque([], maxlen=3)
         self.last_valid_x_params = deque([], maxlen=3)
         self.last_valid_y_params = deque([], maxlen=3)
-        self.stay = False
+####
+        # self.stay = False
+####
 
     def mean_valid_params(self, last_valid_params):
         size = [size[0] for size in last_valid_params]
@@ -263,25 +265,25 @@ class KalmanBoxTracker(object):
         is_right = valid_mean_vel_x > 0
         is_down = valid_mean_vel_y > 0
 
-######## Remove it? Handling objects without velocity out of scope?
         det = self.last_observation
-        if abs(valid_mean_vel_x) < 1 and abs(valid_mean_vel_y) < 1:
-            self.stay = True
-            valid_mean_width *=1.3
-            valid_mean_height *= 1.3
-            is_right = self.kf.x[4] < 0
-            is_down = self.kf.x[5] < 0
-            self.kf.x[4] = 0
-            self.kf.x[5] = 0
-            self.last_observation = det
-        else:
-            if abs(valid_mean_vel_x) < 1:
-                valid_mean_width = mean_width * 1.1
-                is_right = self.kf.x[4] < 0
+######## Remove it? Handling objects without velocity out of scope?
+        # if abs(valid_mean_vel_x) < 1 and abs(valid_mean_vel_y) < 1:
+        #     self.stay = True
+        #     valid_mean_width *=1.3
+        #     valid_mean_height *= 1.3
+        #     is_right = self.kf.x[4] < 0
+        #     is_down = self.kf.x[5] < 0
+        #     self.kf.x[4] = 0
+        #     self.kf.x[5] = 0
+        #     self.last_observation = det
+        # else:
+        #     if abs(valid_mean_vel_x) < 1:
+        #         valid_mean_width = mean_width * 1.1
+        #         is_right = self.kf.x[4] < 0
         
-            if abs(valid_mean_vel_y) < 1:
-                valid_mean_height = mean_height * 1.1
-                is_down = self.kf.x[5] < 0
+        #     if abs(valid_mean_vel_y) < 1:
+        #         valid_mean_height = mean_height * 1.1
+        #         is_down = self.kf.x[5] < 0
 ########
 
         if is_right:
@@ -308,7 +310,9 @@ class KalmanBoxTracker(object):
         """
 
         if det is not None:
-            self.stay = False
+#####
+            # self.stay = False
+#####
             self.check_if_disappearing(det)
             bbox = det[0:5]
             self.conf = det[4]
@@ -347,16 +351,17 @@ class KalmanBoxTracker(object):
             self.last_size.append((det[2] - det[0], det[3]- det[1]))
             self.last_vel.append((float(self.kf.x[4]), float(self.kf.x[5])))
         else:
-        #######
-            if self.stay:
-                self.kf.x[4] = 0
-                self.kf.x[5] = 0
-                self.kf.update(self.bbox_to_z_func(self.last_observation))
-            else:
-        ########
-                if sum(self.last_is_disappearing) < 3:
-                    det = self.modify_prediction()
-                self.kf.update(det)
+#######
+            # if self.stay:
+            #     self.kf.x[4] = 0
+            #     self.kf.x[5] = 0
+            #     self.kf.update(self.bbox_to_z_func(self.last_observation))
+            # else:
+########
+            if sum(self.last_is_disappearing) < 3:
+                det = self.modify_prediction()
+            self.kf.update(det)
+
             self.frozen = True
 
     def update_emb(self, emb, alpha=0.9):

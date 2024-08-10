@@ -9,7 +9,7 @@ OTDET_BASE = {
     "metadata": {
         "classes": CLASSES,
     },
-    "data": {"detections": []},
+    "data": {"detections": {}},
 }
 
 
@@ -39,20 +39,18 @@ class DetectionExporter:
         otdet["metadata"]["model"] = self.detector_name
         otdet["metadata"]["video"] = self.metadata
         for frame_id, dets in self.detections.items():
-            record = {
-                frame_id: [
-                    {
-                        "x": float(det_record[0]),
-                        "y": float(det_record[1]),
-                        "w": float(det_record[2]),
-                        "h": float(det_record[3]),
-                        "confidence": float(det_record[4]),
-                        "class": int(det_record[5]),
-                    }
-                    for det_record in dets
-                ]
-            }
-            otdet["data"]["detections"].append(record)
+            frame_records = [
+                {
+                    "x": float(det_record[0]),
+                    "y": float(det_record[1]),
+                    "w": float(det_record[2]),
+                    "h": float(det_record[3]),
+                    "confidence": float(det_record[4]),
+                    "class": int(det_record[5]),
+                }
+                for det_record in dets
+            ]
+            otdet["data"]["detections"][frame_id] = frame_records
         return otdet
 
     def update(self, frame_id, dets):

@@ -1,7 +1,9 @@
+import os
 from typing import Callable
 from pathlib import Path
 
 import cv2
+import numpy as np
 from boxmot import BoTSORT, DeepOCSORT
 from boxmot.trackers.basetracker import BaseTracker
 
@@ -36,7 +38,7 @@ from traffic_counter.plugin_video_processing.tracks_exporter import (
 from traffic_counter.plugin_ui.customtkinter_gui.video_processing_progress_bar_window import (
     VideoProcessingProgressBarWindow,
 )
-from traffic_counter.plugin_parser.json_parser import write_json
+from traffic_counter.plugin_parser.json_parser import parse_json, write_json
 
 CO_DETR_NAME = "CO-DETR"
 RT_DETR_NAME = "RT-DETR"
@@ -124,6 +126,8 @@ def process(
     frame_count = vid_reader.get(cv2.CAP_PROP_FRAME_COUNT)
 
     base_path = f"{str(video_path).rsplit('.', 1)[0]}_{detector_name}_{tracker_name}"
+    detection_data_path = f"{str(video_path).rsplit('.', 1)[0]}_{detector_name}.otdet"
+    detection_data = parse_json(detection_data_path) if os.path.isfile(detection_data_path) else None
 
     if save_processed_video:
         vid_writer = initialize_video_writer(vid_reader, base_path + ".mp4")
@@ -135,7 +139,11 @@ def process(
         if not ret:
             break
 
-        dets = detector.detect(im)
+        if detection_data:
+            frame_dets = detection_data["data"]["detections"][str(frame_id)]
+            dets = np.array([[det["x"], det["y"], det["w"], det["h"], det["confidence"], det["class"]] for det in frame_dets])
+        else:
+            dets = detector.detect(im)
         detection_exporter.update(frame_id, dets)
         tracker.update(dets, im)
         track_exporter.update(frame_id)
@@ -151,8 +159,5 @@ def process(
     if save_processed_video:
         vid_writer.release()
     if save_detections:
-        write_json(
-            detection_exporter.otdet,
-            f"{str(video_path).rsplit('.', 1)[0]}_{detector_name}.otdet",
-        )
+        write_json(detection_exporter.otdet, detection_data_path)
     data_handler(track_exporter.ottrk, base_path, save_processed_video)

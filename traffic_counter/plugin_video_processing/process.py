@@ -5,6 +5,7 @@ import cv2
 from boxmot import BoTSORT, DeepOCSORT
 from boxmot.trackers.basetracker import BaseTracker
 
+from traffic_counter.plugin_video_processing.detection_exporter import DetectionExporter
 from traffic_counter.plugin_video_processing.detectors.co_detr.co_detr_adapter import (
     CODETRAdapter as CODETR,
 )
@@ -35,6 +36,7 @@ from traffic_counter.plugin_video_processing.tracks_exporter import (
 from traffic_counter.plugin_ui.customtkinter_gui.video_processing_progress_bar_window import (
     VideoProcessingProgressBarWindow,
 )
+from traffic_counter.plugin_parser.json_parser import write_json
 
 CO_DETR_NAME = "CO-DETR"
 RT_DETR_NAME = "RT-DETR"
@@ -110,12 +112,14 @@ def process(
     progress_bar: VideoProcessingProgressBarWindow,
     data_handler: Callable,
     save_processed_video: bool,
+    save_detections: bool = True,
 ):
     video_path = Path(video_path)
 
     detector = get_detector(detector_name)
+    detection_exporter = DetectionExporter(detector_name, video_path)
     tracker = get_tracker(tracker_name)
-    exporter = get_results_exporter(tracker, video_path, tracker_name)
+    track_exporter = get_results_exporter(tracker, video_path, tracker_name)
     vid_reader = cv2.VideoCapture(video_path)
     frame_count = vid_reader.get(cv2.CAP_PROP_FRAME_COUNT)
 
@@ -132,8 +136,9 @@ def process(
             break
 
         dets = detector.detect(im)
+        detection_exporter.update(frame_id, dets)
         tracker.update(dets, im)
-        exporter.update(frame_id)
+        track_exporter.update(frame_id)
 
         if save_processed_video:
             plot_results(tracker, im, show_trajectories=True)
@@ -145,4 +150,9 @@ def process(
     vid_reader.release()
     if save_processed_video:
         vid_writer.release()
-    data_handler(exporter.ottrk, base_path, save_processed_video)
+    if save_detections:
+        write_json(
+            detection_exporter.otdet,
+            f"{str(video_path).rsplit('.', 1)[0]}_{detector_name}.otdet",
+        )
+    data_handler(track_exporter.ottrk, base_path, save_processed_video)

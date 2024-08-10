@@ -158,6 +158,6 @@ def process(
     vid_reader.release()
     if save_processed_video:
         vid_writer.release()
-    if save_detections:
+    if save_detections and not os.path.isfile(detection_data_path):
         write_json(detection_exporter.otdet, detection_data_path)
     data_handler(track_exporter.ottrk, base_path, save_processed_video)

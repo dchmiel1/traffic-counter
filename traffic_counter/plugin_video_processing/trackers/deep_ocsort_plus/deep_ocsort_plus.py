@@ -197,7 +197,7 @@ class KalmanBoxTracker(object):
 
         self.frozen = False
 
-        self.last_is_disappearing = deque([], maxlen=5)
+        self.last_is_disappearing = deque([], maxlen=6)
         self.last_size = deque([], maxlen=3)
         self.last_vel = deque([], maxlen=3)
         self.last_valid_x_params = deque([], maxlen=3)
@@ -358,7 +358,7 @@ class KalmanBoxTracker(object):
             #     self.kf.update(self.bbox_to_z_func(self.last_observation))
             # else:
 ########
-            if sum(self.last_is_disappearing) < 3:
+            if sum(self.last_is_disappearing) > 4:
                 det = self.modify_prediction()
             self.kf.update(det)
 

@@ -154,6 +154,9 @@ class TracksExporter(ABC):
         if any(x < 0 for x in track.history_observations[-1]):
             return False
 
+        if hasattr(track, "frozen") and track.frozen:
+            return False
+
         return True
 
     @abstractmethod

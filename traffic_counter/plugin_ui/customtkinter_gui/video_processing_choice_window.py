@@ -4,9 +4,9 @@ from customtkinter import CTkLabel, CTkCheckBox, CTkFrame, CTkFont
 
 from traffic_counter.plugin_video_processing.process import (
     BOT_SORT_NAME,
+    BOT_SORT_PLUS_NAME,
     CO_DETR_NAME,
     DEEP_OC_SORT_NAME,
-    DEEP_OC_SORT_PLUS_NAME,
     RT_DETR_NAME,
     SMILETRACK_NAME,
     YOLOV6_NAME,
@@ -54,19 +54,19 @@ class FrameSetAlgorithms(CTkFrame):
     def check_bot_sort(self):
         self.checkbox_smiletrack.deselect()
         self.checkbox_deep_oc_sort.deselect()
-        self.checkbox_deep_oc_sort_plus.deselect()
+        self.checkbox_botsort_plus.deselect()
 
     def check_smiletrack(self):
         self.checkbox_botsort.deselect()
         self.checkbox_deep_oc_sort.deselect()
-        self.checkbox_deep_oc_sort_plus.deselect()
+        self.checkbox_botsort_plus.deselect()
 
     def check_deep_oc_sort(self):
         self.checkbox_botsort.deselect()
         self.checkbox_smiletrack.deselect()
-        self.checkbox_deep_oc_sort_plus.deselect()
+        self.checkbox_botsort_plus.deselect()
 
-    def check_deep_oc_sort_plus(self):
+    def check_botsort_plus(self):
         self.checkbox_botsort.deselect()
         self.checkbox_smiletrack.deselect()
         self.checkbox_deep_oc_sort.deselect()
@@ -102,10 +102,10 @@ class FrameSetAlgorithms(CTkFrame):
             command=self.check_deep_oc_sort,
             corner_radius=50,
         )
-        self.checkbox_deep_oc_sort_plus = CTkCheckBox(
+        self.checkbox_botsort_plus = CTkCheckBox(
             master=self,
-            text=DEEP_OC_SORT_PLUS_NAME,
-            command=self.check_deep_oc_sort_plus,
+            text=BOT_SORT_PLUS_NAME,
+            command=self.check_botsort_plus,
             corner_radius=50,
         )
 
@@ -119,7 +119,7 @@ class FrameSetAlgorithms(CTkFrame):
             self.checkbox_botsort,
             self.checkbox_smiletrack,
             self.checkbox_deep_oc_sort,
-            self.checkbox_deep_oc_sort_plus,
+            self.checkbox_botsort_plus,
         ]
 
         self.save_vid_checkbox = CTkCheckBox(
@@ -159,7 +159,7 @@ class FrameSetAlgorithms(CTkFrame):
         self.checkbox_deep_oc_sort.grid(
             row=3, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
         )
-        self.checkbox_deep_oc_sort_plus.grid(
+        self.checkbox_botsort_plus.grid(
             row=4, column=1, padx=PADX * 3, pady=PADY, sticky=STICKY
         )
 

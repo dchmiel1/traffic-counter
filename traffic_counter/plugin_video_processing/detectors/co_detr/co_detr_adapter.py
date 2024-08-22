@@ -1,5 +1,6 @@
 import numpy as np
 
+from traffic_counter.plugin_video_processing import WEIGHTS_DIR
 from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
     DetectorAdapter,
 )
@@ -11,7 +12,6 @@ from traffic_counter.plugin_video_processing.tracks_exporter import CLASSES
 
 
 class CODETRAdapter(DetectorAdapter):
-    weights_dir = "weights/codetr/"
     config_dir = "traffic_counter/plugin_video_processing/detectors/co_detr/projects/configs/co_dino/"
 
     def __init__(
@@ -22,7 +22,7 @@ class CODETRAdapter(DetectorAdapter):
     ):
         self.detector = init_codetr_detector(
             config=self.config_dir + config,
-            checkpoint=self.weights_dir + weights,
+            checkpoint=WEIGHTS_DIR + weights,
             device=device,
         )
 

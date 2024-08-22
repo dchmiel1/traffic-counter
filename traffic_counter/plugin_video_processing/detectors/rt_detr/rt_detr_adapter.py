@@ -2,6 +2,7 @@ import numpy as np
 
 from ultralytics import RTDETR
 
+from traffic_counter.plugin_video_processing import WEIGHTS_DIR
 from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
     DetectorAdapter,
 )
@@ -9,10 +10,8 @@ from traffic_counter.plugin_video_processing.tracks_exporter import CLASSES
 
 
 class RTDETRAdapter(DetectorAdapter):
-    weights_dir = "weights/rtdetr/"
-
     def __init__(self, weights="rtdetr-x.pt"):
-        self.detector = RTDETR(model=self.weights_dir + weights)
+        self.detector = RTDETR(model=WEIGHTS_DIR + weights)
 
     def _convert_dets(self, dets):
         return np.array(dets[0].boxes.data.cpu())

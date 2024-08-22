@@ -7,6 +7,7 @@ import numpy as np
 from boxmot import BoTSORT, DeepOCSORT
 from boxmot.trackers.basetracker import BaseTracker
 
+from traffic_counter.plugin_video_processing import WEIGHTS_DIR
 from traffic_counter.plugin_video_processing.detection_exporter import DetectionExporter
 from traffic_counter.plugin_video_processing.detectors.co_detr.co_detr_adapter import (
     CODETRAdapter as CODETR,
@@ -82,7 +83,7 @@ def get_tracker(tracker_name: str) -> BaseTracker:
         raise Exception(f"Invalid tracker '{tracker_name}'")
 
     return tracker_class(
-        model_weights=Path("weights/trackers/osnet_x0_25_msmt17.pt"),
+        model_weights=Path(WEIGHTS_DIR + "osnet_x0_25_msmt17.pt"),
         device="cuda:0",
         fp16=False,
     )

@@ -1,5 +1,6 @@
 import numpy as np
 
+from traffic_counter.plugin_video_processing import WEIGHTS_DIR
 from traffic_counter.plugin_video_processing.detectors.abstract_detector_adapter import (
     DetectorAdapter,
 )
@@ -10,7 +11,7 @@ from traffic_counter.plugin_video_processing.tracks_exporter import CLASSES
 
 
 class YOLOv6Adapter(DetectorAdapter):
-    weights_dir = "weights/yolov6/"
+
 
     def __init__(
         self,
@@ -25,7 +26,7 @@ class YOLOv6Adapter(DetectorAdapter):
         self.agnostic_nms = agnostic_nms
         self.detector = YOLOv6Inferer(
             None,
-            weights=self.weights_dir + weights,
+            weights=WEIGHTS_DIR + weights,
             device=device,
             yaml="traffic_counter/plugin_video_processing/detectors/yolov6/data/coco.yaml",
             img_size=[640, 640],

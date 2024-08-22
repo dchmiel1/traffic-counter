@@ -691,6 +691,13 @@ class DummyViewModel(
             for section_id in self._application.section_state.selected_sections.get()
         ]
 
+    def _update_detector_and_tracker(self, file_path: str):
+        name = file_path.rsplit(".")[0]
+        _split = name.split("_")
+        if len(_split) > 1:
+            self._detector = _split[-2]
+            self._tracker = _split[-1]
+
     def load_video_or_tracks(self) -> None:
         file = Path(
             askopenfilename(
@@ -709,6 +716,7 @@ class DummyViewModel(
 
         elif file.suffix == ".ottrk":
             self.load_tracks(file)
+            self._update_detector_and_tracker(str(file))
             self._video_player.update_items()
         else:
             self.add_video(file)

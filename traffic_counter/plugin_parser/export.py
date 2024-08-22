@@ -91,37 +91,32 @@ class ODMatrixExporter(Exporter):
 
     def export(self, counts: Count) -> None:
         logger().info(f"Exporting counts to {self._output_file}")
-        origins, destinations, counts = self.__create_records(counts)
+        origins, destinations = self.__create_records(counts)
         if len(origins) == 0 or len(destinations) == 0:
             logger().info("Nothing to count.")
             return
-        self._to_xlsx(origins, destinations, counts)
+        self._to_xlsx(origins, destinations)
         logger().info(f"Counts saved at {self._output_file}")
 
-    def _to_xlsx(self, origins: list, destinations: list, counts: list[list]):
+    def _to_xlsx(self, origins: list, destinations: dict):
         workbook = xlsxwriter.Workbook(self.__create_path())
         worksheet = workbook.add_worksheet()
         worksheet.write(0, 0, "O\D")
+        destinations = dict(sorted(destinations.items()))
 
         for i, o in enumerate(origins):
             worksheet.write(i + 1, 0, o)
-        for j, d in enumerate(destinations):
+        for j, (d, counts) in enumerate(destinations.items()):
             worksheet.write(0, j + 1, d)
-
-        for i in range(len(origins)):
-            for j in range(len(destinations)):
-                worksheet.write(i + 1, j + 1, counts[i][j])
+            for k in range(len(origins)):
+                worksheet.write(k + 1, j + 1, counts[k])
         workbook.close()
 
     @staticmethod
     def __create_records(counts: Count) -> DataFrame:
         transformed = counts.to_dict()
         origins = []
-        destinations = []
-        matrix = [
-            [0 for _ in range(len(transformed.keys()))]
-            for _ in range(len(transformed.keys()))
-        ]
+        destinations = {}
         for key, value in transformed.items():
             result_dict: dict = key.as_dict()
             o = result_dict["from section"]
@@ -129,9 +124,11 @@ class ODMatrixExporter(Exporter):
             if o not in origins:
                 origins.append(o)
             if d not in destinations:
-                destinations.append(d)
-            matrix[origins.index(o)][destinations.index(d)] += value
-        return origins, destinations, matrix
+                destinations[d] = [0 for _ in range(len(transformed.keys()))]
+            destinations[d][origins.index(o)] += value
+        return origins, destinations
+
+
 
     def __create_path(self) -> Path:
         fixed_file_ending = (

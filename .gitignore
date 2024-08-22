@@ -175,5 +175,6 @@ Thumbs.db
 #profiling
 profiles/
 
-weights
+*.pth
+*.pt
 checkpoints

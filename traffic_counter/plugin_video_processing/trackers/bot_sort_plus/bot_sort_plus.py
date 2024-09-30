@@ -1,6 +1,7 @@
 # Mikel Broström 🔥 Yolo Tracking 🧾 AGPL-3.0 license
 
 import numpy as np
+import torch
 from collections import deque
 
 from boxmot.appearance.reid_auto_backend import ReidAutoBackend
@@ -16,9 +17,6 @@ from boxmot.utils.matching import (
 from boxmot.utils.ops import xywh2xyxy, xyxy2xywh
 from boxmot.trackers.basetracker import BaseTracker
 from boxmot.utils import PerClassDecorator
-
-
-from statistics import mean, StatisticsError
 
 
 class STrack(BaseTrack):
@@ -46,11 +44,12 @@ class STrack(BaseTrack):
         self.features = deque([], maxlen=feat_history)
         self.alpha = 0.9
 
-        self.last_is_disappearing = deque([], maxlen=3)
         self.last_size = deque([], maxlen=3)
-        self.last_vel = deque([], maxlen=3)
         self.last_valid_x_params = deque([], maxlen=3)
         self.last_valid_y_params = deque([], maxlen=3)
+
+        self.last_is_disappearing = deque([], maxlen=3)
+        self.last_diffs = deque([], maxlen=3)
 
     def update_features(self, feat):
         feat /= np.linalg.norm(feat)
@@ -91,6 +90,75 @@ class STrack(BaseTrack):
             mean_state, self.covariance
         )
 
+    def modify_prediction(self):
+        try:
+            # obtain saved params
+            valid_mean_width, valid_mean_vel_x = self.mean_params(
+                self.last_valid_x_params
+            )
+            valid_mean_height, valid_mean_vel_y = self.mean_params(
+                self.last_valid_y_params
+            )
+            mean_width, mean_height = self.mean_params(self.last_size)
+        except ValueError:
+            return None, None
+
+        last_prediction = xywh2xxyy(self.mean[:4])
+
+        # prepare data
+        valid_vels = [valid_mean_vel_x, valid_mean_vel_y]
+        valid_size = [valid_mean_width, valid_mean_height]
+        last_size = [mean_width, mean_height]
+        diffs = [sum(x) / len(self.last_diffs) for x in zip(*self.last_diffs)]
+        skip = [sum(x) < 1 for x in zip(*self.last_is_disappearing)]
+
+        # move prediction right/down
+        def go_forward(coords, valid_size, last_size):
+            coords[1] = coords[0] + valid_size
+            coords[0] = coords[1] - last_size
+            return coords
+
+        # move prediction left/up
+        def go_back(coords, valid_size, last_size):
+            coords[0] = coords[1] - valid_size
+            coords[1] = coords[0] + last_size
+            return coords
+
+        new_xxyy = []
+        for i, coords in enumerate([(last_prediction[:2]), (last_prediction[2:4])]):
+            if skip[i]:
+                new_xxyy.extend(coords)
+                continue
+
+            if abs(valid_vels[i]) < 2:
+                # 1st case - object not moving or moving very slowly
+                modify_coords = go_forward if diffs[i] < 0 else go_back
+            elif valid_vels[i] * diffs[i] > 0 and abs(diffs[i]) > abs(valid_vels[i]):
+                # 2nd case - object covered by faster obstacle
+                modify_coords = go_forward if valid_vels[i] < 0 else go_back
+            else:
+                # 3rd case - object went behind obstacle
+                modify_coords = go_forward if valid_vels[i] > 0 else go_back
+
+            new_xxyy.extend(modify_coords(coords, valid_size[i], last_size[i]))
+
+        self.last_is_disappearing.clear()
+        self.last_diffs.clear()
+        return xxyy2xyxy(new_xxyy), (valid_mean_vel_x, valid_mean_vel_y)
+
+    def modify_mean(self, mean):
+        if any([sum(x) > 1 for x in zip(*self.last_is_disappearing)]):
+            bbox, vels = self.modify_prediction()
+            if bbox is not None and vels is not None:
+                mean[0] = (bbox[0] + bbox[2]) / 2
+                mean[1] = (bbox[1] + bbox[3]) / 2
+                mean[2] = bbox[2] - bbox[0]
+                mean[3] = bbox[3] - bbox[1]
+                mean[4] = vels[0]
+                mean[5] = vels[1]
+        mean[6] = 0
+        mean[7] = 0
+
     @staticmethod
     def multi_predict(stracks):
         if len(stracks) > 0:
@@ -98,21 +166,7 @@ class STrack(BaseTrack):
             multi_covariance = np.asarray([st.covariance for st in stracks])
             for i, st in enumerate(stracks):
                 if st.state != TrackState.Tracked:
-                    if sum(st.last_is_disappearing) > 1:
-                        det, vels = st.modify_prediction()
-                        if det is not None and vels is not None:
-                            multi_mean[i][0] = (det[0] + det[2]) / 2
-                            multi_mean[i][1] = (det[1] + det[3]) / 2
-                            multi_mean[i][2] = det[2] - det[0]
-                            multi_mean[i][3] = det[3] - det[1]
-                            multi_mean[i][4] = vels[0]
-                            multi_mean[i][5] = vels[1]
-                        else:
-                            multi_mean[i][6] = 0
-                            multi_mean[i][7] = 0
-                    else:
-                        multi_mean[i][6] = 0
-                        multi_mean[i][7] = 0
+                    st.modify_mean(multi_mean[i])
             multi_mean, multi_covariance = STrack.shared_kalman.multi_predict(
                 multi_mean, multi_covariance
             )
@@ -170,102 +224,39 @@ class STrack(BaseTrack):
 
         self.update_cls(new_track.cls, new_track.conf)
 
-    def mean_valid_params(self, last_valid_params):
-        size = [size[0] for size in last_valid_params]
-        vel = [vels[1] for vels in last_valid_params]
-        return mean(size), mean(vel)
+    def mean_params(self, params):
+        return (sum(p) / len(params) for p in zip(*params))
 
-    def mean_size(self):
-        width = [size[0] for size in self.last_size]
-        height = [size[1] for size in self.last_size]
-        return mean(width), mean(height)
+    def save_params(self):
+        curr_bbox = self.xyxy
+        width = self.mean[2]
+        height = self.mean[3]
 
-    def mean_vel(self):
-        vel_x = [vels[0] for vels in self.last_vel]
-        vel_y = [vels[1] for vels in self.last_vel]
-        return mean(vel_x), mean(vel_y)
+        last_bbox = self.history_observations[-1]
+        x_diff = (curr_bbox[2] + curr_bbox[0]) / 2 - (last_bbox[2] + last_bbox[0]) / 2
+        y_diff = (curr_bbox[3] + curr_bbox[1]) / 2 - (last_bbox[3] + last_bbox[1]) / 2
 
-    def check_if_disappearing(self, det):
+        self.last_diffs.append((x_diff, y_diff))
+        self.last_size.append((width, height))
+
+    def check_if_disappearing(self):
         try:
-            mean_width, mean_height = self.mean_size()
-            mean_vel_x, mean_vel_y = self.mean_vel()
-        except StatisticsError:
+            mean_width, mean_height = self.mean_params(self.last_size)
+        except (ValueError, KeyError):
             return
 
-        width = det[2] - det[0]
-        height = det[3] - det[1]
+        width = self.mean[2]
+        height = self.mean[3]
 
-        last_det = self.history_observations[-1]
-
-        x_center, y_center = (det[2] + det[0]) / 2, (det[3] + det[1]) / 2
-        x_last_center, y_last_center = (last_det[2] + last_det[0]) / 2, (
-            last_det[3] + last_det[1]
-        ) / 2
-
-        def is_slower_than_expected(curr_center, last_center, vel):
-            return (
-                abs(curr_center - last_center) < abs(vel)
-                and vel * (curr_center - last_center) > 0
-            )
-
-        is_disappearing = False
-        if mean_width * 0.85 > width and is_slower_than_expected(
-            x_center, x_last_center, mean_vel_x
-        ):
-            is_disappearing = True
-
-        if mean_height * 0.85 > height and is_slower_than_expected(
-            y_center, y_last_center, mean_vel_y
-        ):
-            is_disappearing = True
-
+        # check if size decreases and save the result
+        is_disappearing = (mean_width * 0.85 > width, mean_height * 0.85 > height)
         self.last_is_disappearing.append(is_disappearing)
 
-        if is_disappearing == False and mean_width <= width:
+        # save valid size and velocity if not disappearing
+        if not is_disappearing[0] and mean_width <= width:
             self.last_valid_x_params.append((width, float(self.mean[4])))
-        if is_disappearing == False and mean_height <= height:
+        if not is_disappearing[1] and mean_height <= height:
             self.last_valid_y_params.append((height, float(self.mean[5])))
-
-    def modify_prediction(self):
-        try:
-            valid_mean_width, valid_mean_vel_x = self.mean_valid_params(
-                self.last_valid_x_params
-            )
-            valid_mean_height, valid_mean_vel_y = self.mean_valid_params(
-                self.last_valid_y_params
-            )
-        except StatisticsError:
-            return None, None
-
-        mean_width, mean_height = self.mean_size()
-
-        is_right = valid_mean_vel_x > 0
-        is_down = valid_mean_vel_y > 0
-
-        det = self.history_observations[-1]
-        det[0] += self.mean[4]
-        det[2] += self.mean[4]
-        det[1] += self.mean[5]
-        det[3] += self.mean[5]
-
-        if abs(valid_mean_vel_x) > 1:
-            if is_right:
-                det[2] = det[0] + valid_mean_width
-                det[0] = det[2] - mean_width
-            else:
-                det[0] = det[2] - valid_mean_width
-                det[2] = det[0] + mean_width
-
-        if abs(valid_mean_vel_y) > 1:
-            if is_down:
-                det[3] = det[1] + valid_mean_height
-                det[1] = det[3] - mean_height
-            else:
-                det[1] = det[3] - valid_mean_height
-                det[3] = det[1] + mean_height
-
-        self.last_is_disappearing.clear()
-        return det, (valid_mean_vel_x, valid_mean_vel_y)
 
     def update(self, new_track, frame_id):
         """
@@ -275,7 +266,6 @@ class STrack(BaseTrack):
         :type update_feature: bool
         :return:
         """
-        self.check_if_disappearing(self.xyxy)
         self.frame_id = frame_id
         self.tracklet_len += 1
 
@@ -284,6 +274,8 @@ class STrack(BaseTrack):
         self.mean, self.covariance = self.kalman_filter.update(
             self.mean, self.covariance, new_track.xywh
         )
+        self.check_if_disappearing()
+        self.save_params()
 
         if new_track.curr_feat is not None:
             self.update_features(new_track.curr_feat)
@@ -295,11 +287,6 @@ class STrack(BaseTrack):
         self.cls = new_track.cls
         self.det_ind = new_track.det_ind
         self.update_cls(new_track.cls, new_track.conf)
-
-        self.last_size.append(
-            (self.xyxy[2] - self.xyxy[0], self.xyxy[3] - self.xyxy[1])
-        )
-        self.last_vel.append((float(self.mean[4]), float(self.mean[5])))
 
     @property
     def xyxy(self):
@@ -600,3 +587,37 @@ def remove_duplicate_stracks(stracksa, stracksb):
     resa = [t for i, t in enumerate(stracksa) if i not in dupa]
     resb = [t for i, t in enumerate(stracksb) if i not in dupb]
     return resa, resb
+
+
+def xywh2xxyy(xywh):
+    """
+    Convert bounding box coordinates from (x_c, y_c, width, height) format to
+    (x1, x2, y1, y2) format where (x1, y1) is the top-left corner and (x2, y2)
+    is the bottom-right corner.
+
+    Args:
+        xywh (np.ndarray) or (torch.Tensor): The input bounding box coordinates in (x, y, width, height) format.
+    Returns:
+        xxyy (np.ndarray) or (torch.Tensor): The bounding box coordinates in (x1, x1, y1, y2) format.
+    """
+
+    xxyy = xywh.clone() if isinstance(xywh, torch.Tensor) else np.copy(xywh)
+    xxyy[..., 0] = xywh[..., 0] - xywh[..., 2] / 2  # top left x
+    xxyy[..., 1] = xywh[..., 0] + xywh[..., 2] / 2  # bottom right x
+    xxyy[..., 2] = xywh[..., 1] - xywh[..., 3] / 2  # top left y
+    xxyy[..., 3] = xywh[..., 1] + xywh[..., 3] / 2  # bottom right y
+    return xxyy
+
+
+def xxyy2xyxy(xxyy):
+    """
+    Convert bounding box coordinates from (x1, x2, y1, y2) format to
+    (x1, y1, x2, y2) format where (x1, y1) is the top-left corner and (x2, y2)
+    is the bottom-right corner.
+
+    Args:
+        xxyy (np.ndarray) or (torch.Tensor): The input bounding box coordinates in (x, y, width, height) format.
+    Returns:
+        xyxy (np.ndarray) or (torch.Tensor): The bounding box coordinates in (x1, y1, x2, y2) format.
+    """
+    return [xxyy[0], xxyy[2], xxyy[1], xxyy[3]]

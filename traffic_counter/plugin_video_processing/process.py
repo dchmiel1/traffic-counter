@@ -153,7 +153,6 @@ def process(
             plot_results(tracker, im, show_trajectories=True)
             vid_writer.write(im)
 
-        print(frame_id)
         progress_bar.update(frame_id / frame_count)
 
     vid_reader.release()

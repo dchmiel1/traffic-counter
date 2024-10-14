@@ -84,14 +84,14 @@ class FrameProject(AbstractFrameProject, EmbeddedCTkFrame):
         # )
         self._button_new = CTkButton(
             master=self._button_frame,
-            text="New",
+            text="New video",
             height=35,
             width=15,
             command=self._viewmodel.load_video_or_tracks,
         )
         self.button_open = CTkButton(
             master=self._button_frame,
-            text="Open...",
+            text="Open project",
             height=35,
             width=10,
             command=self._viewmodel.load_configuration,

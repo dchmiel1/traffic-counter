@@ -25,9 +25,9 @@ pip install mmcv-full==1.7.0 -f https://download.openmmlab.com/mmcv/dist/cu113/t
 
 To enable video processing, you need to download the weights for the detection and tracking algorithms and place them into  ```weights``` directory:
 
-- [CO-DETR](https://drive.google.com/file/d/1Jr5a-B3qyomtOBHKUTzlLLHKs-jqCW3T/view?usp=drive_link)
-- [RT-DETR](https://drive.google.com/file/d/1a4IRPiNR3NxOBDiks0gdMq8wOG2JNv30/view?usp=sharing)
-- [YOLOv6 3.0](https://drive.google.com/file/d/1sZ5lW04iH9Cf64kffA0AsOA2GFgmOKDj/view?usp=sharing)
+- [CO-DETR](https://drive.google.com/file/d/1KOqpiXyLRxi2i4zY0BSSIBO_wIWLwQIw/view?usp=drive_link)
+- [RT-DETR](https://drive.google.com/file/d/17A2oPf2CuV-pcjyiESibN_HMzT3e10YW/view?usp=drive_link)
+- [YOLOv6 3.0](https://drive.google.com/file/d/1bMGABSSnQWD0aMSPiHIDjWPKpK1c1I2-/view?usp=drive_link)
 
 # Run
 
